@@ -1,20 +1,36 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# ClariFi — Intelligent Wealth Management
 
-# Run and deploy your AI Studio app
+ClariFi is a modern, AI-powered personal accounting and wealth management application designed to turn complex financial data into simple, beautiful, and actionable insights.
 
-This contains everything you need to run your app locally.
+## 🚀 Features
 
-View your app in AI Studio: https://ai.studio/apps/5aef4ac4-3da9-4033-8674-75c2a5c889b3
+- **Intelligent Insights**: Powered by Gemini AI to analyze spending habits and provide smart financial advice.
+- **Real-time Tracking**: Securely store and sync your transactions using Firebase Firestore.
+- **Gamified Savings**: Build streaks, earn XP, and complete challenges to level up your financial health.
+- **Receipt Scanning**: Quickly add expenses by scanning receipts with your camera.
+- **Budgeting & Goals**: Set monthly budgets and track your progress toward financial milestones.
+- **Financial Recap**: Get a comprehensive overview of your spending patterns and net worth.
 
-## Run Locally
+## 🔒 Security & Privacy
 
-**Prerequisites:**  Node.js
+Your trust is our priority. ClariFi is built with industry-standard security measures:
 
+- **Authentication**: Protected by Firebase Authentication with secure token-based sessions and Google Sign-In.
+- **Data Protection**: All data is encrypted in transit (SSL/TLS) and at rest by Google's Firestore infrastructure.
+- **Access Control**: Strict Firestore Security Rules ensure only you can access your financial data.
+- **Infrastructure**: Built on Google Cloud infrastructure — the same platform trusted by millions of applications worldwide.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🛠️ Tech Stack
+
+- **Frontend**: React 18+, TypeScript, Vite
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion (motion/react)
+- **Icons**: Lucide React
+- **Backend**: Firebase (Auth, Firestore)
+- **AI**: Google Gemini API
+
+## 📜 Legal
+
+Access our **Terms & Conditions** and **Privacy Policy** directly from the user profile dropdown in the application.
+
+© 2026 ClariFi • Clarity in Every Expense.
