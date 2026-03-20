@@ -93,19 +93,23 @@ import FinancialRecap from './components/FinancialRecap';
 import SavingChallenges from './components/SavingChallenges';
 import About from './components/About';
 import Legal from './components/Legal';
-import { LogIn, PieChart, Plus, List, Lightbulb, Sparkles, Wallet, TrendingUp, TrendingDown, Settings, Flame, Target, Camera, Bell, Brain, History, Trophy, Info, ShieldCheck, FileText, Lock } from 'lucide-react';
+import Support from './components/Support';
+import { LogIn, PieChart, Plus, List, Lightbulb, Sparkles, Wallet, TrendingUp, TrendingDown, Settings, Flame, Target, Camera, Bell, Brain, History, Trophy, Info, ShieldCheck, FileText, Lock, LifeBuoy } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import React from 'react';
 import { format, differenceInDays } from 'date-fns';
 import { Goal } from './types';
+import { useWindowSize } from './hooks/useWindowSize';
 
 export default function App() {
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'expenses' | 'insights' | 'budgets' | 'goals' | 'challenges' | 'settings' | 'about' | 'terms' | 'policies' | 'security'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'expenses' | 'insights' | 'budgets' | 'goals' | 'challenges' | 'settings' | 'about' | 'terms' | 'policies' | 'security' | 'support'>('dashboard');
   const [settingsTab, setSettingsTab] = useState<'general' | 'recap'>('general');
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddBudget, setShowAddBudget] = useState(false);
@@ -366,34 +370,35 @@ export default function App() {
           }} 
         />
         
-        {/* Animated Background Blobs */}
+        {/* Animated Background Blobs - Simplified on Mobile */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div 
-            animate={{ 
-              scale: [1, 1.3, 1],
-              x: [0, 50, 0],
-              y: [0, 30, 0],
-              opacity: [0.1, 0.2, 0.1] 
+            animate={isMobile ? {} : { 
+              scale: [1, 1.2, 1],
+              x: [0, 30, 0],
+              y: [0, 20, 0],
+              opacity: [0.05, 0.1, 0.05] 
             }}
             transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-1/4 -left-1/4 w-[800px] h-[800px] bg-emerald-500/30 blur-[140px] rounded-full"
+            className="absolute -top-1/4 -left-1/4 w-[300px] sm:w-[800px] h-[300px] sm:h-[800px] bg-emerald-500/10 sm:bg-emerald-500/30 blur-[60px] sm:blur-[140px] rounded-full"
           />
           <motion.div 
-            animate={{ 
-              scale: [1.3, 1, 1.3],
-              x: [0, -60, 0],
-              y: [0, -40, 0],
-              opacity: [0.1, 0.15, 0.1] 
+            animate={isMobile ? {} : { 
+              scale: [1.2, 1, 1.2],
+              x: [0, -40, 0],
+              y: [0, -30, 0],
+              opacity: [0.05, 0.08, 0.05] 
             }}
             transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -bottom-1/4 -right-1/4 w-[800px] h-[800px] bg-blue-500/30 blur-[140px] rounded-full"
+            className="absolute -bottom-1/4 -right-1/4 w-[300px] sm:w-[800px] h-[300px] sm:h-[800px] bg-blue-500/10 sm:bg-blue-500/30 blur-[60px] sm:blur-[140px] rounded-full"
           />
         </div>
 
-        {/* Floating Currency Icons */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(6)].map((_, i) => (
-            <motion.div
+        {/* Floating Currency Icons - Hidden on Mobile for Performance */}
+        {!isMobile && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
               key={i}
               initial={{ 
                 x: Math.random() * 100 + '%', 
@@ -416,6 +421,7 @@ export default function App() {
             </motion.div>
           ))}
         </div>
+      )}
 
         <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-16 items-center relative z-10">
           {/* Left Side: Content */}
@@ -608,6 +614,7 @@ export default function App() {
       onTermsClick={() => setActiveTab('terms')}
       onPoliciesClick={() => setActiveTab('policies')}
       onSecurityClick={() => setActiveTab('security')}
+      onSupportClick={() => setActiveTab('support')}
       onNotificationsClick={() => setShowNotifications(true)}
       unreadNotifications={notifications.filter(n => !n.read).length}
     >
@@ -754,6 +761,9 @@ export default function App() {
             {activeTab === 'security' && (
               <Legal type="security" onBack={() => setActiveTab('dashboard')} />
             )}
+            {activeTab === 'support' && (
+              <Support onBack={() => setActiveTab('dashboard')} />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -796,7 +806,7 @@ export default function App() {
               setShowAddForm(false);
               setScanData(null);
             }}
-            className="absolute inset-0 bg-zinc-950/60 dark:bg-zinc-950/90 backdrop-blur-md"
+            className="absolute inset-0 bg-zinc-950/80 sm:bg-zinc-950/60 dark:bg-zinc-950/95 backdrop-blur-md sm:backdrop-blur-md"
           />
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 20 }}

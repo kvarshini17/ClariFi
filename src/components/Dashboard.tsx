@@ -372,6 +372,17 @@ export default function Dashboard({
           </div>
         </div>
       )}
+
+      {/* Back to Top - Mobile Only */}
+      <div className="flex justify-center pt-8 pb-4 sm:hidden">
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="flex items-center gap-2 px-6 py-3 bg-zinc-100 dark:bg-white/5 rounded-full text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all border border-zinc-200 dark:border-white/10"
+        >
+          <ArrowUpRight size={14} className="-rotate-45" />
+          Back to Top
+        </button>
+      </div>
     </div>
   );
 }

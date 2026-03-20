@@ -1,7 +1,7 @@
 import React, { ReactNode, useState, useRef, useEffect } from 'react';
 import { User as FirebaseUser } from 'firebase/auth';
 import { UserProfile } from '../types';
-import { LogOut, Wallet, Sparkles, Settings, Bell, User, History, ChevronDown, Info, ShieldCheck, FileText, Lock } from 'lucide-react';
+import { LogOut, Wallet, Sparkles, Settings, Bell, User, History, ChevronDown, Info, ShieldCheck, FileText, Lock, LifeBuoy } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface LayoutProps {
@@ -15,6 +15,7 @@ interface LayoutProps {
   onTermsClick?: () => void;
   onPoliciesClick?: () => void;
   onSecurityClick?: () => void;
+  onSupportClick?: () => void;
   onNotificationsClick?: () => void;
   unreadNotifications?: number;
 }
@@ -30,6 +31,7 @@ export default function Layout({
   onTermsClick,
   onPoliciesClick,
   onSecurityClick,
+  onSupportClick,
   onNotificationsClick,
   unreadNotifications = 0 
 }: LayoutProps) {
@@ -57,12 +59,12 @@ export default function Layout({
         }} 
       />
 
-      {/* Background Blobs & 3D Objects */}
+      {/* Background Blobs & 3D Objects - Simplified on Mobile */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-emerald-500/10 blur-[120px] rounded-full animate-pulse-slow" />
-        <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-blue-500/10 blur-[120px] rounded-full animate-pulse-slow" style={{ animationDelay: '-4s' }} />
+        <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-emerald-500/5 dark:bg-emerald-500/10 blur-[80px] sm:blur-[120px] rounded-full animate-pulse-slow" />
+        <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-blue-500/5 dark:bg-blue-500/10 blur-[80px] sm:blur-[120px] rounded-full animate-pulse-slow" style={{ animationDelay: '-4s' }} />
         
-        {/* Floating 3D-like elements */}
+        {/* Floating 3D-like elements - Hidden on Mobile for Performance */}
         <motion.div 
           animate={{ 
             y: [0, -20, 0],
@@ -70,7 +72,7 @@ export default function Layout({
             scale: [1, 1.1, 1]
           }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[15%] right-[15%] w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-blue-500/20 rounded-3xl blur-xl"
+          className="absolute top-[15%] right-[15%] w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-blue-500/20 rounded-3xl blur-xl hidden sm:block"
         />
         <motion.div 
           animate={{ 
@@ -79,10 +81,10 @@ export default function Layout({
             scale: [1, 0.9, 1]
           }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[20%] left-[10%] w-48 h-48 bg-gradient-to-tr from-purple-500/10 to-emerald-500/10 rounded-full blur-2xl"
+          className="absolute bottom-[20%] left-[10%] w-48 h-48 bg-gradient-to-tr from-purple-500/10 to-emerald-500/10 rounded-full blur-2xl hidden sm:block"
         />
-        <div className="absolute top-[40%] left-[5%] w-24 h-24 border border-white/5 rounded-full animate-float" style={{ animationDuration: '10s' }} />
-        <div className="absolute bottom-[10%] right-[5%] w-40 h-40 border border-white/5 rounded-2xl rotate-12 animate-float" style={{ animationDuration: '15s' }} />
+        <div className="absolute top-[40%] left-[5%] w-24 h-24 border border-white/5 rounded-full animate-float hidden lg:block" style={{ animationDuration: '10s' }} />
+        <div className="absolute bottom-[10%] right-[5%] w-40 h-40 border border-white/5 rounded-2xl rotate-12 animate-float hidden lg:block" style={{ animationDuration: '15s' }} />
       </div>
 
       <header className="border-b border-zinc-200 dark:border-white/5 sticky top-0 z-40 backdrop-blur-xl bg-white/50 dark:bg-zinc-950/50">
@@ -201,6 +203,14 @@ export default function Layout({
                     </button>
 
                     <div className="h-px bg-zinc-100 dark:bg-white/5 my-1" />
+
+                    <button
+                      onClick={() => { onSupportClick?.(); setShowUserMenu(false); }}
+                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                    >
+                      <LifeBuoy size={18} />
+                      <span className="text-xs font-black uppercase tracking-widest text-left">Support & Help</span>
+                    </button>
 
                     <button
                       onClick={() => { onLogout(); setShowUserMenu(false); }}
