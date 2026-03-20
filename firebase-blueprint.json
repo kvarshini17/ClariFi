@@ -1,0 +1,137 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Information about the authenticated user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique Firebase Auth ID." },
+        "email": { "type": "string", "format": "email", "description": "The user's email address." },
+        "displayName": { "type": "string", "description": "The user's display name." },
+        "photoURL": { "type": "string", "description": "The user's profile photo URL." },
+        "country": { "type": "string", "description": "The user's selected country." },
+        "currency": {
+          "type": "object",
+          "properties": {
+            "code": { "type": "string" },
+            "symbol": { "type": "string" },
+            "name": { "type": "string" }
+          },
+          "required": ["code", "symbol", "name"]
+        },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the user account was created." },
+        "budgets": {
+          "type": "array",
+          "items": { "$ref": "Budget" },
+          "description": "User's set budgets."
+        },
+        "goals": {
+          "type": "array",
+          "items": { "$ref": "Goal" },
+          "description": "User's financial goals."
+        }
+      },
+      "required": ["uid", "email"]
+    },
+    "Goal": {
+      "title": "Financial Goal",
+      "description": "A target savings or spending goal.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "uid": { "type": "string" },
+        "title": { "type": "string" },
+        "targetAmount": { "type": "number" },
+        "currentAmount": { "type": "number" },
+        "deadline": { "type": "string", "format": "date-time" },
+        "category": { "type": "string" },
+        "icon": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "uid", "title", "targetAmount", "currentAmount", "category", "icon", "createdAt"]
+    },
+    "Budget": {
+      "title": "Budget Plan",
+      "description": "A budget limit for a specific category.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "uid": { "type": "string" },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "period": { "type": "string", "enum": ["monthly", "weekly"] },
+        "alertThreshold": { "type": "number", "description": "Percentage threshold for alerts." },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "uid", "category", "amount", "period", "alertThreshold", "createdAt"]
+    },
+    "Transaction": {
+      "title": "Transaction Record",
+      "description": "An individual expense or income entry.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The ID of the user who owns this transaction." },
+        "amount": { "type": "number", "description": "The transaction amount." },
+        "category": { "type": "string", "description": "The category of the transaction (e.g., Food, Income)." },
+        "type": { "type": "string", "description": "The type of transaction: 'expense' or 'income'." },
+        "date": { "type": "string", "format": "date-time", "description": "The date of the transaction." },
+        "note": { "type": "string", "description": "An optional note about the transaction." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the record was created." }
+      },
+      "required": ["uid", "amount", "category", "type", "date"]
+    },
+    "Notification": {
+      "title": "App Notification",
+      "description": "A notification sent to the user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The ID of the user who owns this notification." },
+        "title": { "type": "string", "description": "The title of the notification." },
+        "message": { "type": "string", "description": "The content of the notification." },
+        "type": { "type": "string", "enum": ["info", "warning", "success"] },
+        "read": { "type": "boolean", "description": "Whether the notification has been read." },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "title", "message", "type", "read", "createdAt"]
+    },
+    "SavingChallenge": {
+      "title": "Saving Challenge",
+      "description": "A gamified saving challenge for the user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "uid": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "targetAmount": { "type": "number" },
+        "currentAmount": { "type": "number" },
+        "duration": { "type": "number", "description": "Duration in days." },
+        "startDate": { "type": "string", "format": "date-time" },
+        "category": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "completed", "failed"] },
+        "reward": { "type": "number" },
+        "icon": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "uid", "title", "targetAmount", "currentAmount", "duration", "startDate", "category", "status", "reward", "icon", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile documents."
+    },
+    "/expenses/{expenseId}": {
+      "schema": "Transaction",
+      "description": "Individual transaction records."
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "User notifications."
+    },
+    "/challenges/{challengeId}": {
+      "schema": "SavingChallenge",
+      "description": "Gamified saving challenges."
+    }
+  }
+}
