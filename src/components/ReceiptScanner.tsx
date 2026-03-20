@@ -11,7 +11,7 @@ interface ReceiptScannerProps {
 export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScannerProps) {
   const [image, setImage] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
-  coanst [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
