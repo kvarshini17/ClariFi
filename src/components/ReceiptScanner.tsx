@@ -11,7 +11,7 @@ interface ReceiptScannerProps {
 export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScannerProps) {
   const [image, setImage] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  coanst [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,21 +105,46 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
           </div>
 
           {!image ? (
-            <div 
-              onClick={() => fileInputRef.current?.click()}
-              className="aspect-video border-2 border-dashed border-zinc-200 dark:border-white/10 rounded-[32px] flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/5 transition-all group"
-            >
-              <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition-transform">
-                <Camera className="text-emerald-400" size={32} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="aspect-square sm:aspect-video border-2 border-dashed border-zinc-200 dark:border-white/10 rounded-[32px] flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/5 transition-all group"
+              >
+                <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition-transform">
+                  <Upload className="text-emerald-400" size={32} />
+                </div>
+                <div className="text-center">
+                  <p className="text-zinc-900 dark:text-white font-black">Upload Receipt</p>
+                  <p className="text-zinc-500 text-xs">JPG, PNG</p>
+                </div>
               </div>
-              <div className="text-center">
-                <p className="text-zinc-900 dark:text-white font-black">Click to scan or upload</p>
-                <p className="text-zinc-500 text-xs">Supports JPG, PNG</p>
+
+              <div 
+                onClick={() => {
+                  if (fileInputRef.current) {
+                    fileInputRef.current.setAttribute('capture', 'environment');
+                    fileInputRef.current.click();
+                  }
+                }}
+                className="aspect-square sm:aspect-video border-2 border-dashed border-zinc-200 dark:border-white/10 rounded-[32px] flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/5 transition-all group"
+              >
+                <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform">
+                  <Camera className="text-blue-400" size={32} />
+                </div>
+                <div className="text-center">
+                  <p className="text-zinc-900 dark:text-white font-black">Take Photo</p>
+                  <p className="text-zinc-500 text-xs">Direct Camera Access</p>
+                </div>
               </div>
+
               <input 
                 type="file" 
                 ref={fileInputRef}
-                onChange={handleFileChange}
+                onChange={(e) => {
+                  handleFileChange(e);
+                  // Reset capture attribute so it doesn't always trigger camera
+                  fileInputRef.current?.removeAttribute('capture');
+                }}
                 accept="image/*"
                 className="hidden"
               />

@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { X, Mail, Lock, LogIn, UserPlus, Chrome, AlertCircle, Globe, ChevronRight, ChevronLeft } from 'lucide-react';
+import { X, Mail, Lock, LogIn, UserPlus, Chrome, AlertCircle, Globe, ChevronRight, ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { COUNTRIES } from '../constants';
 
@@ -21,6 +21,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -171,14 +172,23 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                   <label className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
                     <Lock size={12} /> Password
                   </label>
-                  <input 
-                    type="password" 
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-white placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
-                  />
+                  <div className="relative">
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 pr-12 text-white placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -253,16 +263,17 @@ export default function AuthModal({ onClose }: AuthModalProps) {
           </form>
         )}
 
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-6">
           <button 
             onClick={() => {
               setIsLogin(!isLogin);
               setStep(1);
               setError('');
             }}
-            className="text-zinc-500 hover:text-white text-xs font-bold transition-colors"
+            className="group inline-flex items-center gap-2 px-8 py-4 bg-emerald-500 text-zinc-950 hover:bg-emerald-400 rounded-full text-sm font-black uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20 hover:scale-105 active:scale-95 animate-pulse-subtle"
           >
-            {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+            {isLogin ? "Don't have an account? Sign Up Now" : "Already have an account? Sign In"}
+            <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </button>
 
           <div className="pt-4 border-t border-white/5">

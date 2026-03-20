@@ -333,6 +333,19 @@ export default function App() {
     }
   };
 
+  // Scroll Lock for Modals
+  useEffect(() => {
+    const isModalOpen = showAddForm || showAddBudget || showAddGoal || showAuthModal || showScanner || showNotifications || showStreakPrompt;
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showAddForm, showAddBudget, showAddGoal, showAuthModal, showScanner, showNotifications, showStreakPrompt]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50">
@@ -467,7 +480,7 @@ export default function App() {
           {/* Auth Modal */}
           <AnimatePresence>
             {showAuthModal && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -578,7 +591,8 @@ export default function App() {
   const currencySymbol = profile?.currency?.symbol || '$';
 
   return (
-    <Layout 
+    <>
+      <Layout 
       user={user} 
       profile={profile}
       onLogout={handleLogout} 
@@ -718,6 +732,7 @@ export default function App() {
             )}
             {activeTab === 'settings' && profile && (
               <ProfileSettings 
+                user={user}
                 profile={profile} 
                 transactions={transactions} 
                 currencySymbol={currencySymbol}
@@ -742,138 +757,139 @@ export default function App() {
           </motion.div>
         </AnimatePresence>
       </div>
+    </Layout>
 
-      {/* Modals & Overlays */}
-      <AnimatePresence>
-        {showAddBudget && (
-          <div key="add-budget-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowAddBudget(false)}
-              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm cursor-pointer"
+    {/* Modals & Overlays - Moved outside Layout to fix stacking context issues */}
+    <AnimatePresence>
+      {showAddBudget && (
+        <div key="add-budget-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowAddBudget(false)}
+            className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm cursor-pointer"
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="relative z-10 w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <BudgetForm 
+              onClose={() => setShowAddBudget(false)}
+              onAdd={handleAddBudget}
+              currencySymbol={currencySymbol}
             />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative z-10 w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <BudgetForm 
-                onClose={() => setShowAddBudget(false)}
-                onAdd={handleAddBudget}
-                currencySymbol={currencySymbol}
-              />
-            </motion.div>
-          </div>
-        )}
+          </motion.div>
+        </div>
+      )}
 
-        {showAddForm && (
-          <div key="add-transaction-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => {
+      {showAddForm && (
+        <div key="add-transaction-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => {
+              setShowAddForm(false);
+              setScanData(null);
+            }}
+            className="absolute inset-0 bg-zinc-950/60 dark:bg-zinc-950/90 backdrop-blur-md"
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
+          >
+            <TransactionForm 
+              onClose={() => {
                 setShowAddForm(false);
                 setScanData(null);
               }}
-              className="absolute inset-0 bg-zinc-950/40 dark:bg-zinc-950/80 backdrop-blur-md"
+              uid={user.uid}
+              currencySymbol={currencySymbol}
+              budgets={profile?.budgets || []}
+              transactions={transactions}
+              initialData={scanData}
             />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
-            >
-              <TransactionForm 
-                onClose={() => {
-                  setShowAddForm(false);
-                  setScanData(null);
-                }}
-                uid={user.uid}
-                currencySymbol={currencySymbol}
-                budgets={profile?.budgets || []}
-                transactions={transactions}
-                initialData={scanData}
-              />
-            </motion.div>
-          </div>
-        )}
+          </motion.div>
+        </div>
+      )}
 
-        {showAddGoal && (
-          <div key="add-goal-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowAddGoal(false)}
-              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm cursor-pointer"
+      {showAddGoal && (
+        <div key="add-goal-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowAddGoal(false)}
+            className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm cursor-pointer"
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="relative z-10 w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <GoalForm 
+              onClose={() => setShowAddGoal(false)}
+              onAdd={handleAddGoal}
+              currencySymbol={currencySymbol}
             />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative z-10 w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <GoalForm 
-                onClose={() => setShowAddGoal(false)}
-                onAdd={handleAddGoal}
-                currencySymbol={currencySymbol}
-              />
-            </motion.div>
-          </div>
-        )}
+          </motion.div>
+        </div>
+      )}
 
-        {showScanner && (
-          <ReceiptScanner 
-            onScanComplete={(data) => {
-              setScanData(data);
-              setShowScanner(false);
-              setShowAddForm(true);
-            }}
-            onClose={() => setShowScanner(false)}
+      {showScanner && (
+        <ReceiptScanner 
+          onScanComplete={(data) => {
+            setScanData(data);
+            setShowScanner(false);
+            setShowAddForm(true);
+          }}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
+      {showNotifications && (
+        <NotificationCenter 
+          uid={user?.uid || ''}
+          notifications={notifications}
+          onClose={() => setShowNotifications(false)}
+        />
+      )}
+      {showStreakPrompt && profile?.streak && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowStreakPrompt(false)}
+            className="absolute inset-0 bg-zinc-950/60 dark:bg-zinc-950/90 backdrop-blur-xl"
           />
-        )}
-        {showNotifications && (
-          <NotificationCenter 
-            uid={user?.uid || ''}
-            notifications={notifications}
-            onClose={() => setShowNotifications(false)}
-          />
-        )}
-        {showStreakPrompt && profile?.streak && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowStreakPrompt(false)}
-              className="absolute inset-0 bg-zinc-950/50 dark:bg-zinc-950/90 backdrop-blur-xl"
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-hidden"
+          >
+            <StreakPrompt 
+              streakCount={profile.streak.count}
+              onClose={() => setShowStreakPrompt(false)}
+              onAddTransaction={() => {
+                setShowStreakPrompt(false);
+                setShowAddForm(true);
+              }}
             />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-hidden"
-            >
-              <StreakPrompt 
-                streakCount={profile.streak.count}
-                onClose={() => setShowStreakPrompt(false)}
-                onAddTransaction={() => {
-                  setShowStreakPrompt(false);
-                  setShowAddForm(true);
-                }}
-              />
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-    </Layout>
-  );
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  </>
+);
 }
 
 function TabButton({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: React.ReactNode, label: string }) {
