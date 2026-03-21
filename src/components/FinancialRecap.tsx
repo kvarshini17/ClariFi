@@ -561,12 +561,14 @@ Check out your own recap on ClariFi!`;
               className="relative w-full max-w-sm flex flex-col gap-6 my-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                onClick={() => setShowShareCard(false)}
-                className="absolute -top-12 right-0 p-2 text-white/50 hover:text-white"
-              >
-                <X size={24} />
-              </button>
+              <div className="flex justify-end mb-2">
+                <button 
+                  onClick={() => setShowShareCard(false)}
+                  className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all text-white group"
+                >
+                  <X size={20} className="group-hover:rotate-90 transition-transform" />
+                </button>
+              </div>
 
               {/* The actual card that will be exported */}
               <div 

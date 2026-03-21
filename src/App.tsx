@@ -618,10 +618,10 @@ export default function App() {
       onNotificationsClick={() => setShowNotifications(true)}
       unreadNotifications={notifications.filter(n => !n.read).length}
     >
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Navigation Tabs */}
         <div className="overflow-x-auto pb-4 sm:pb-0 no-scrollbar">
-          <div className="flex bg-white dark:bg-white/5 backdrop-blur-md p-1.5 rounded-[24px] mb-12 w-max sm:w-fit mx-auto sm:mx-0 border border-zinc-200 dark:border-white/10 transition-colors">
+          <div className="flex bg-white dark:bg-white/5 backdrop-blur-md p-1.5 rounded-[24px] mb-8 w-max sm:w-fit mx-auto sm:mx-0 border border-zinc-200 dark:border-white/10 transition-colors">
             <TabButton 
               active={activeTab === 'dashboard'} 
               onClick={() => setActiveTab('dashboard')}

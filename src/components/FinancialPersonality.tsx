@@ -87,7 +87,7 @@ export default function FinancialPersonality({ transactions }: FinancialPersonal
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="glass-card p-8 rounded-[40px] relative overflow-hidden group"
+      className="glass-card p-6 sm:p-8 rounded-3xl relative overflow-hidden group"
     >
       <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] -mr-32 -mt-32 group-hover:bg-emerald-500/10 transition-colors" />
       
