@@ -7,9 +7,10 @@ interface GoalFormProps {
   onClose: () => void;
   onAdd: (goal: Omit<Goal, 'id' | 'uid' | 'createdAt' | 'currentAmount'>) => void;
   currencySymbol: string;
+  customCategories?: string[];
 }
 
-export default function GoalForm({ onClose, onAdd, currencySymbol }: GoalFormProps) {
+export default function GoalForm({ onClose, onAdd, currencySymbol, customCategories = [] }: GoalFormProps) {
   const [title, setTitle] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [category, setCategory] = useState('Savings');
@@ -37,7 +38,7 @@ export default function GoalForm({ onClose, onAdd, currencySymbol }: GoalFormPro
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Set a New Goal</h3>
-          <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Define your financial target</p>
+          <p className="text-zinc-600 dark:text-zinc-400 text-[11px] font-bold uppercase tracking-widest">Define your financial target</p>
         </div>
         <button onClick={onClose} className="p-2 hover:bg-zinc-100 dark:hover:bg-white/5 rounded-xl transition-colors">
           <X size={20} />
@@ -47,7 +48,7 @@ export default function GoalForm({ onClose, onAdd, currencySymbol }: GoalFormPro
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">What are you saving for?</label>
+            <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-400 uppercase tracking-widest ml-1">What are you saving for?</label>
             <div className="relative">
               <Target className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
               <input 
@@ -63,7 +64,7 @@ export default function GoalForm({ onClose, onAdd, currencySymbol }: GoalFormPro
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Target Amount</label>
+              <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-400 uppercase tracking-widest ml-1">Target Amount</label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">{currencySymbol}</span>
                 <input 
@@ -77,7 +78,7 @@ export default function GoalForm({ onClose, onAdd, currencySymbol }: GoalFormPro
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Deadline (Optional)</label>
+              <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-400 uppercase tracking-widest ml-1">Deadline (Optional)</label>
               <div className="relative">
                 <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
                 <input 
@@ -91,7 +92,7 @@ export default function GoalForm({ onClose, onAdd, currencySymbol }: GoalFormPro
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Category</label>
+            <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-400 uppercase tracking-widest ml-1">Category</label>
             <div className="relative">
               <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
               <select 
@@ -104,12 +105,15 @@ export default function GoalForm({ onClose, onAdd, currencySymbol }: GoalFormPro
                 <option value="Purchase">Major Purchase</option>
                 <option value="Travel">Travel</option>
                 <option value="Emergency">Emergency Fund</option>
+                {customCategories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Choose an Icon</label>
+            <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-400 uppercase tracking-widest ml-1">Choose an Icon</label>
             <div className="flex flex-wrap gap-2">
               {icons.map(i => (
                 <button

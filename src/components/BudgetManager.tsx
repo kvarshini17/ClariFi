@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Budget, Category } from '../types';
 import { doc, updateDoc, arrayRemove } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Plus, Trash2, Target, PieChart, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -24,7 +24,7 @@ export default function BudgetManager({ uid, budgets, currencySymbol, onAddClick
       });
       setConfirmDelete(null);
     } catch (error) {
-      console.error("Error deleting budget:", error);
+      handleFirestoreError(error, OperationType.UPDATE, `users/${uid}`);
     }
   };
 
@@ -35,8 +35,8 @@ export default function BudgetManager({ uid, budgets, currencySymbol, onAddClick
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Budget Planning</h2>
-          <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Set your financial boundaries</p>
+          <h3 className="text-[25px] font-black text-zinc-900 dark:text-white tracking-tight">Budget Planning</h3>
+          <p className="text-zinc-600 dark:text-zinc-400 text-[12px] font-bold uppercase tracking-widest">Set your financial boundaries</p>
         </div>
         <button 
           onClick={onAddClick}
@@ -61,12 +61,12 @@ export default function BudgetManager({ uid, budgets, currencySymbol, onAddClick
                   <Target className="text-emerald-400" size={24} />
                 </div>
                 <div>
-                  <h4 className="font-black text-zinc-900 dark:text-white">{budget.category}</h4>
+                  <h4 className="font-black text-zinc-900 dark:text-white font-arial">{budget.category}</h4>
                   <div className="flex flex-col">
-                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
+                    <p className="text-[12px] font-black text-[#ceceda] uppercase tracking-widest">
                       {budget.period} • {currencySymbol}{budget.amount.toLocaleString()}
                     </p>
-                    <p className="text-[9px] font-bold text-amber-500 uppercase tracking-widest">
+                    <p className="text-[12px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest">
                       Alert at {budget.alertThreshold}%
                     </p>
                   </div>
@@ -78,7 +78,7 @@ export default function BudgetManager({ uid, budgets, currencySymbol, onAddClick
                   <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2">
                     <button 
                       onClick={() => handleDelete(budget)}
-                      className="px-2 py-1 bg-red-500 text-white text-[8px] font-black uppercase tracking-widest rounded-md"
+                      className="px-2 py-1 bg-red-500 text-white text-[11px] font-black uppercase tracking-widest rounded-md"
                     >
                       Confirm
                     </button>

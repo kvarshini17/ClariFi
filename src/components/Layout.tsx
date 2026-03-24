@@ -1,14 +1,16 @@
 import React, { ReactNode, useState, useRef, useEffect } from 'react';
 import { User as FirebaseUser } from 'firebase/auth';
 import { UserProfile } from '../types';
-import { LogOut, Wallet, Sparkles, Settings, Bell, User, History, ChevronDown, Info, ShieldCheck, FileText, Lock, LifeBuoy } from 'lucide-react';
+import { LogOut, Wallet, Sparkles, Settings, Bell, User, History, ChevronDown, Info, ShieldCheck, FileText, Lock, LifeBuoy, RefreshCw, MessageCircle, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 
 interface LayoutProps {
   children: ReactNode;
   user: FirebaseUser;
   profile?: UserProfile | null;
   onLogout: () => void;
+  onConverterClick?: () => void;
   onSettingsClick?: () => void;
   onRecapClick?: () => void;
   onAboutClick?: () => void;
@@ -25,6 +27,7 @@ export default function Layout({
   user, 
   profile,
   onLogout, 
+  onConverterClick,
   onSettingsClick, 
   onRecapClick,
   onAboutClick,
@@ -35,6 +38,7 @@ export default function Layout({
   onNotificationsClick,
   unreadNotifications = 0 
 }: LayoutProps) {
+  const { t } = useTranslation();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -95,7 +99,7 @@ export default function Layout({
             </div>
             <div className="flex flex-col">
               <span className="font-black text-lg tracking-tighter text-zinc-900 dark:text-white">ClariFi</span>
-              <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
+              <div className="flex items-center gap-1 text-xs font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-widest">
                 <Sparkles size={10} /> Pro
               </div>
             </div>
@@ -120,9 +124,9 @@ export default function Layout({
               >
                 <div className="hidden sm:flex flex-col items-end">
                   <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-emerald-400 transition-colors truncate max-w-[100px] lg:max-w-[150px]">
-                    Hi, {profile?.displayName || user.displayName || user.email?.split('@')[0] || 'Friend'}
+                    {t('dashboard.welcome')} {profile?.displayName || user.displayName || user.email?.split('@')[0] || 'Friend'}
                   </span>
-                  <span className="text-[8px] sm:text-[10px] text-zinc-500 font-bold uppercase tracking-wider truncate max-w-[100px] lg:max-w-[150px]">
+                  <span className="text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400 font-bold uppercase tracking-wider truncate max-w-[100px] lg:max-w-[150px]">
                     {user.email}
                   </span>
                 </div>
@@ -150,8 +154,8 @@ export default function Layout({
                     className="absolute right-0 mt-2 w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden py-2 z-50"
                   >
                     <div className="px-4 py-3 border-b border-zinc-100 dark:border-white/5 sm:hidden">
-                      <p className="text-sm font-black text-zinc-900 dark:text-white truncate">Hi, {profile?.displayName || user.displayName || user.email?.split('@')[0] || 'Friend'}</p>
-                      <p className="text-[10px] font-bold text-zinc-500 truncate">{user.email}</p>
+                      <p className="text-sm font-black text-zinc-900 dark:text-white truncate">{t('dashboard.welcome')} {profile?.displayName || user.displayName || user.email?.split('@')[0] || 'Friend'}</p>
+                      <p className="text-xs font-bold text-zinc-600 dark:text-zinc-400 truncate">{user.email}</p>
                     </div>
 
                     <button
@@ -159,15 +163,23 @@ export default function Layout({
                       className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <Settings size={18} />
-                      <span className="text-xs font-black uppercase tracking-widest">Settings</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest">{t('nav.settings')}</span>
+                    </button>
+
+                    <button
+                      onClick={() => { onConverterClick?.(); setShowUserMenu(false); }}
+                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                    >
+                      <RefreshCw size={18} />
+                      <span className="text-[11px] font-black uppercase tracking-widest">{t('settings.converter.title')}</span>
                     </button>
 
                     <button
                       onClick={() => { onRecapClick?.(); setShowUserMenu(false); }}
                       className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
-                      <History size={18} />
-                      <span className="text-xs font-black uppercase tracking-widest">Recap</span>
+                      <BarChart3 size={18} />
+                      <span className="text-[11px] font-black uppercase tracking-widest">{t('recap.title')}</span>
                     </button>
 
                     <button
@@ -175,7 +187,7 @@ export default function Layout({
                       className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <Info size={18} />
-                      <span className="text-xs font-black uppercase tracking-widest">About App</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest">{t('nav.about_app')}</span>
                     </button>
 
                     <button
@@ -183,7 +195,7 @@ export default function Layout({
                       className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <Lock size={18} />
-                      <span className="text-xs font-black uppercase tracking-widest text-left">Security & Privacy</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest text-left">{t('settings.security')}</span>
                     </button>
 
                     <button
@@ -191,7 +203,7 @@ export default function Layout({
                       className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <FileText size={18} />
-                      <span className="text-xs font-black uppercase tracking-widest text-left">Terms & Conditions</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest text-left">{t('nav.terms')}</span>
                     </button>
 
                     <button
@@ -199,25 +211,25 @@ export default function Layout({
                       className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <ShieldCheck size={18} />
-                      <span className="text-xs font-black uppercase tracking-widest text-left">Policies</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest text-left">{t('nav.policies')}</span>
                     </button>
-
-                    <div className="h-px bg-zinc-100 dark:bg-white/5 my-1" />
 
                     <button
                       onClick={() => { onSupportClick?.(); setShowUserMenu(false); }}
                       className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
-                      <LifeBuoy size={18} />
-                      <span className="text-xs font-black uppercase tracking-widest text-left">Support & Help</span>
+                      <MessageCircle size={18} />
+                      <span className="text-[11px] font-black uppercase tracking-widest text-left">{t('nav.support')}</span>
                     </button>
+
+                    <div className="h-px bg-zinc-100 dark:bg-white/5 my-1" />
 
                     <button
                       onClick={() => { onLogout(); setShowUserMenu(false); }}
                       className="w-full px-4 py-3 flex items-center gap-3 text-rose-500 hover:bg-rose-500/10 transition-colors"
                     >
                       <LogOut size={18} />
-                      <span className="text-xs font-black uppercase tracking-widest">Logout</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest">{t('nav.logout')}</span>
                     </button>
                   </motion.div>
                 )}
@@ -233,13 +245,13 @@ export default function Layout({
       
       <footer className="py-20 text-center relative z-10">
         <div className="max-w-6xl mx-auto px-4 border-t border-zinc-200 dark:border-white/5 pt-10 space-y-4">
-          <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.2em]">© 2026 ClariFi • Intelligent Finance</p>
+          <p className="text-zinc-700 dark:text-zinc-400 text-xs font-black uppercase tracking-[0.2em]">© 2026 ClariFi • Intelligent Finance</p>
           <div className="flex items-center justify-center gap-6">
             <button 
               onClick={() => onAboutClick?.()} 
-              className="text-zinc-500 hover:text-emerald-500 text-[10px] font-black uppercase tracking-widest transition-colors"
+              className="text-zinc-600 dark:text-zinc-400 hover:text-emerald-500 text-xs font-black uppercase tracking-widest transition-colors"
             >
-              About
+              {t('nav.about')}
             </button>
           </div>
         </div>

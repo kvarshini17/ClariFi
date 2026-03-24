@@ -3,7 +3,7 @@ import { Goal } from '../types';
 import { Plus, Target, Calendar, Trash2, ChevronRight, Sparkles, CheckCircle2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, handleFirestoreError, OperationType } from '../firebase';
 
 interface GoalTrackerProps {
   uid: string;
@@ -25,7 +25,7 @@ export default function GoalTracker({ uid, goals, currencySymbol, onAddClick }: 
       });
       setConfirmDelete(null);
     } catch (error) {
-      console.error("Error deleting goal:", error);
+      handleFirestoreError(error, OperationType.UPDATE, `users/${uid}`);
     }
   };
 
@@ -49,7 +49,7 @@ export default function GoalTracker({ uid, goals, currencySymbol, onAddClick }: 
 
       setContributeAmount(prev => ({ ...prev, [goal.id]: '' }));
     } catch (error) {
-      console.error("Error contributing to goal:", error);
+      handleFirestoreError(error, OperationType.UPDATE, `users/${uid}`);
     } finally {
       setIsSubmitting(null);
     }
@@ -62,14 +62,19 @@ export default function GoalTracker({ uid, goals, currencySymbol, onAddClick }: 
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">Financial Goals</h2>
-          <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Turn your dreams into reality</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-2">
+            <span className="text-[13px] font-black text-[#f1f5f5] uppercase tracking-widest">Milestones</span>
+          </div>
+          <h3 className="text-[27px] font-black text-zinc-900 dark:text-white tracking-tight">Financial Goals</h3>
+          <p className="text-zinc-600 dark:text-zinc-400 text-[15px] font-bold uppercase tracking-widest">Turn your dreams into reality</p>
         </div>
         <button 
           onClick={onAddClick}
-          className="p-3 bg-blue-500 text-white rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all"
+          style={{ height: '45px', width: '160.575px', lineHeight: '23px' }}
+          className="bg-blue-500 text-white rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all font-black text-[14px] flex items-center justify-center gap-2 px-4"
         >
-          <Plus size={20} />
+          <Plus size={18} />
+          Add Goal
         </button>
       </div>
 
@@ -120,7 +125,7 @@ export default function GoalTracker({ uid, goals, currencySymbol, onAddClick }: 
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="font-black text-zinc-900 dark:text-white text-lg">{goal.title}</h4>
+                        <h4 className="font-black text-zinc-900 dark:text-white text-[19px]">{goal.title}</h4>
                         {isCompleted && (
                           <motion.div
                             initial={{ scale: 0 }}
@@ -131,7 +136,7 @@ export default function GoalTracker({ uid, goals, currencySymbol, onAddClick }: 
                           </motion.div>
                         )}
                       </div>
-                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                      <p className="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest">
                         {goal.category}
                       </p>
                     </div>
@@ -142,7 +147,7 @@ export default function GoalTracker({ uid, goals, currencySymbol, onAddClick }: 
                       <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2">
                         <button 
                           onClick={() => handleDelete(goal)}
-                          className="px-3 py-1.5 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg shadow-red-500/20 hover:scale-105 transition-all"
+                          className="px-3 py-1.5 bg-red-500 text-white text-xs font-black uppercase tracking-widest rounded-lg shadow-lg shadow-red-500/20 hover:scale-105 transition-all"
                         >
                           Confirm
                         </button>
@@ -167,10 +172,10 @@ export default function GoalTracker({ uid, goals, currencySymbol, onAddClick }: 
                 <div className="space-y-4 relative z-10">
                   <div className="flex justify-between items-end">
                     <div className="space-y-1">
-                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Progress</p>
+                      <p className="text-[15px] font-bold text-[#ceceda] uppercase tracking-widest">Progress</p>
                       <p className="text-xl font-black text-zinc-900 dark:text-white">
                         {currencySymbol}{goal.currentAmount.toLocaleString()} 
-                        <span className="text-zinc-400 text-sm font-medium ml-1">/ {currencySymbol}{goal.targetAmount.toLocaleString()}</span>
+                        <span className="text-zinc-400 text-[13px] font-medium ml-1">/ {currencySymbol}{goal.targetAmount.toLocaleString()}</span>
                       </p>
                     </div>
                     <div className="text-right">
@@ -208,7 +213,7 @@ export default function GoalTracker({ uid, goals, currencySymbol, onAddClick }: 
                       <button 
                         onClick={() => handleContribute(goal)}
                         disabled={isSubmitting === goal.id}
-                        className="px-4 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg disabled:opacity-50 disabled:scale-100"
+                        className="px-4 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg disabled:opacity-50 disabled:scale-100"
                       >
                         {isSubmitting === goal.id ? '...' : 'Contribute'}
                       </button>
@@ -224,14 +229,14 @@ export default function GoalTracker({ uid, goals, currencySymbol, onAddClick }: 
                       <div className="bg-emerald-500 text-white p-1.5 rounded-lg">
                         <Sparkles size={14} />
                       </div>
-                      <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Goal Achieved! You're amazing.</p>
+                      <p className="text-xs font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest">Goal Achieved! You're amazing.</p>
                     </motion.div>
                   )}
 
                   {goal.deadline && (
                     <div className="flex items-center gap-2 text-zinc-500 mt-2">
                       <Calendar size={14} />
-                      <span className="text-[10px] font-bold uppercase tracking-wider">
+                      <span className="text-xs font-bold uppercase tracking-wider">
                         Target: {formatDate(goal.deadline)}
                       </span>
                     </div>

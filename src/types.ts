@@ -1,6 +1,7 @@
 export type TransactionType = 'expense' | 'income';
-export type Category = 'Food' | 'Travel' | 'Bills' | 'Shopping' | 'Health' | 'Entertainment' | 'Others' | 'Income';
+export type Category = string;
 export type Theme = 'light' | 'dark' | 'system';
+export type FontSize = 'small' | 'medium' | 'large';
 
 export interface Transaction {
   id: string;
@@ -41,6 +42,8 @@ export interface UserProfile {
   country?: string;
   phoneNumber?: string;
   theme?: Theme;
+  fontSize?: FontSize;
+  language?: string; // e.g. 'en', 'es'
   streak?: {
     count: number;
     lastLoginDate: string; // ISO date string YYYY-MM-DD
@@ -52,6 +55,7 @@ export interface UserProfile {
   };
   budgets?: Budget[];
   goals?: Goal[];
+  customCategories?: string[];
   createdAt: Date;
 }
 
@@ -83,7 +87,7 @@ export interface SavingChallenge {
   createdAt: string;
 }
 
-export type PersonalityType = 'The Saver' | 'The Spender' | 'The Strategist' | 'The Impulse Buyer' | 'The Balanced';
+export type PersonalityType = string;
 
 export interface FinancialPersonality {
   type: PersonalityType;

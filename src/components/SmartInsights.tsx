@@ -129,8 +129,8 @@ export default function SmartInsights({ transactions, budgets = [], currencySymb
           <Sparkles className="text-emerald-400" size={24} />
         </div>
         <div className="space-y-1">
-          <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">AI Insights</h2>
-          <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Intelligent Pattern Recognition</p>
+          <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">AI Insights</h3>
+          <p className="text-zinc-600 dark:text-zinc-400 text-xs font-bold uppercase tracking-widest">Intelligent Pattern Recognition</p>
         </div>
       </div>
 
@@ -144,7 +144,7 @@ export default function SmartInsights({ transactions, budgets = [], currencySymb
             <div className="mt-0.5 bg-zinc-50 dark:bg-white/5 p-3 rounded-xl border border-zinc-200 dark:border-white/5 relative z-10">{insight.icon}</div>
             <div className="space-y-2 relative z-10">
               <h4 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">{insight.title}</h4>
-              <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">{insight.message}</p>
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">{insight.message}</p>
             </div>
           </div>
         ))}
@@ -152,11 +152,11 @@ export default function SmartInsights({ transactions, budgets = [], currencySymb
 
       <div className="bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-900 dark:to-black rounded-[40px] p-10 text-zinc-900 dark:text-white relative overflow-hidden border border-zinc-200 dark:border-white/10 shadow-2xl transition-colors">
         <div className="relative z-10 space-y-6 max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black uppercase tracking-widest">
             Daily Wisdom
           </div>
-          <h3 className="text-3xl font-black tracking-tight leading-tight">The 50/30/20 Rule</h3>
-          <p className="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed font-medium">
+          <h3 className="text-2xl font-black tracking-tight leading-tight">The 50/30/20 Rule</h3>
+          <p className="text-zinc-600 dark:text-zinc-400 text-base leading-relaxed font-medium">
             "Allocate 50% for needs, 30% for wants, and 20% for savings or debt repayment. This simple ratio is the foundation of long-term wealth."
           </p>
         </div>

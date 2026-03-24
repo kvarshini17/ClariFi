@@ -1,5 +1,5 @@
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, handleFirestoreError, OperationType } from '../firebase';
 
 export type NotificationType = 'info' | 'warning' | 'success';
 
@@ -21,6 +21,6 @@ export const createNotification = async ({ uid, title, message, type }: CreateNo
       createdAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error creating notification:', error);
+    handleFirestoreError(error, OperationType.CREATE, 'notifications');
   }
 };

@@ -78,7 +78,7 @@ export default function CurrencySetup({ onComplete }: CurrencySetupProps) {
               >
                 <div className="text-left">
                   <p className={`text-sm font-black tracking-tight transition-colors ${selected?.code === country.code ? 'text-zinc-900 dark:text-white' : 'text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white'}`}>{country.name}</p>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">{country.currency.code} • {country.currency.symbol}</p>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] opacity-60 mt-1 text-zinc-600 dark:text-zinc-400">{country.currency.code} • {country.currency.symbol}</p>
                 </div>
                 {selected?.code === country.code && (
                   <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="bg-emerald-500 rounded-full p-1">

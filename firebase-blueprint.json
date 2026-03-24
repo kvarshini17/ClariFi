@@ -10,6 +10,18 @@
         "displayName": { "type": "string", "description": "The user's display name." },
         "photoURL": { "type": "string", "description": "The user's profile photo URL." },
         "country": { "type": "string", "description": "The user's selected country." },
+        "phoneNumber": { "type": "string", "description": "The user's phone number." },
+        "theme": { "type": "string", "enum": ["light", "dark", "system"] },
+        "fontSize": { "type": "string", "enum": ["small", "medium", "large"] },
+        "language": { "type": "string", "description": "The user's selected language." },
+        "streak": {
+          "type": "object",
+          "properties": {
+            "count": { "type": "integer" },
+            "lastLoginDate": { "type": "string", "format": "date" }
+          },
+          "required": ["count", "lastLoginDate"]
+        },
         "currency": {
           "type": "object",
           "properties": {
@@ -29,6 +41,11 @@
           "type": "array",
           "items": { "$ref": "Goal" },
           "description": "User's financial goals."
+        },
+        "customCategories": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "User's custom transaction categories."
         }
       },
       "required": ["uid", "email"]
@@ -114,6 +131,21 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "uid", "title", "targetAmount", "currentAmount", "duration", "startDate", "category", "status", "reward", "icon", "createdAt"]
+    },
+    "SupportMessage": {
+      "title": "Support Message",
+      "description": "A message sent by a user to the support team.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The ID of the user who sent the message." },
+        "email": { "type": "string", "format": "email", "description": "The email address of the user." },
+        "subject": { "type": "string", "description": "The subject of the message." },
+        "message": { "type": "string", "description": "The content of the message." },
+        "reply": { "type": "string", "description": "The response from the support team." },
+        "status": { "type": "string", "enum": ["pending", "replied", "closed"], "description": "The status of the support request." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the message was sent." }
+      },
+      "required": ["uid", "email", "subject", "message", "status", "createdAt"]
     }
   },
   "firestore": {
@@ -132,6 +164,10 @@
     "/challenges/{challengeId}": {
       "schema": "SavingChallenge",
       "description": "Gamified saving challenges."
+    },
+    "/support_messages/{messageId}": {
+      "schema": "SupportMessage",
+      "description": "Support messages sent by users."
     }
   }
 }

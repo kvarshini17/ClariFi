@@ -4,7 +4,7 @@ import { Bell, X, Info, AlertCircle, CheckCircle2, Trash2, CheckCheck } from 'lu
 import { motion, AnimatePresence } from 'motion/react';
 import { format } from 'date-fns';
 import { doc, updateDoc, deleteDoc, writeBatch, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, handleFirestoreError, OperationType } from '../firebase';
 
 interface NotificationCenterProps {
   uid: string;
@@ -29,7 +29,7 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
     try {
       await updateDoc(doc(db, 'notifications', id), { read: true });
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      handleFirestoreError(error, OperationType.UPDATE, `notifications/${id}`);
     }
   };
 
@@ -45,7 +45,7 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
     try {
       await batch.commit();
     } catch (error) {
-      console.error("Error marking all as read:", error);
+      handleFirestoreError(error, OperationType.WRITE, 'notifications (batch update)');
     }
   };
 
@@ -60,7 +60,7 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
     try {
       await batch.commit();
     } catch (error) {
-      console.error("Error clearing notifications:", error);
+      handleFirestoreError(error, OperationType.DELETE, 'notifications (batch delete)');
     }
   };
 
@@ -68,7 +68,7 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
     try {
       await deleteDoc(doc(db, 'notifications', id));
     } catch (error) {
-      console.error("Error deleting notification:", error);
+      handleFirestoreError(error, OperationType.DELETE, `notifications/${id}`);
     }
   };
 
@@ -99,14 +99,14 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
                 <Bell className="text-zinc-900 dark:text-white" size={24} />
               </div>
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-zinc-900">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-600 text-white text-[11px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-zinc-900">
                   {unreadCount}
                 </span>
               )}
             </div>
             <div>
               <h3 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight">Activity</h3>
-              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mt-0.5">
+              <p className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mt-0.5">
                 {unreadCount} New Alerts
               </p>
             </div>
@@ -124,7 +124,7 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
           <div className="px-8 py-3 bg-zinc-50/30 dark:bg-white/1 border-b border-zinc-100 dark:border-white/5 flex justify-between items-center">
             <button 
               onClick={markAllAsRead}
-              className="flex items-center gap-2 text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:opacity-70 transition-opacity disabled:opacity-30"
+              className="flex items-center gap-2 text-[11px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:opacity-70 transition-opacity disabled:opacity-30"
               disabled={unreadCount === 0}
             >
               <CheckCheck size={14} />
@@ -132,7 +132,7 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
             </button>
             <button 
               onClick={clearAll}
-              className="flex items-center gap-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest hover:text-rose-500 transition-colors"
+              className="flex items-center gap-2 text-[11px] font-black text-zinc-400 uppercase tracking-widest hover:text-rose-500 transition-colors"
             >
               <Trash2 size={14} />
               Clear all
@@ -184,7 +184,7 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
                         <h4 className={`font-black tracking-tight text-sm truncate ${notif.read ? 'text-zinc-500' : 'text-zinc-900 dark:text-white'}`}>
                           {notif.title}
                         </h4>
-                        <span className="text-[10px] text-zinc-400 font-black whitespace-nowrap pt-0.5">
+                        <span className="text-[11px] text-zinc-400 font-black whitespace-nowrap pt-0.5">
                           {format(notif.createdAt, 'HH:mm')}
                         </span>
                       </div>
@@ -196,14 +196,14 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
                         {!notif.read && (
                           <button 
                             onClick={(e) => { e.stopPropagation(); markAsRead(notif.id); }}
-                            className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:underline"
+                            className="text-[11px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:underline"
                           >
                             Mark Read
                           </button>
                         )}
                         <button 
                           onClick={(e) => { e.stopPropagation(); deleteNotification(notif.id); }}
-                          className="text-[10px] font-black text-rose-500 uppercase tracking-widest hover:underline"
+                          className="text-[11px] font-black text-rose-500 uppercase tracking-widest hover:underline"
                         >
                           Remove
                         </button>

@@ -3,60 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Trophy, Target, Calendar, Award, Flame, Zap, CheckCircle2, XCircle, Info, Plus, Trash2, TrendingUp } from 'lucide-react';
 import { SavingChallenge, Category } from '../types';
 import { createNotification } from '../services/notificationService';
-import { db } from '../firebase';
+import { db, auth, handleFirestoreError, OperationType } from '../firebase';
 import { collection, addDoc, query, where, onSnapshot, updateDoc, doc, deleteDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
-import { auth } from '../firebase';
-
-enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
-}
-
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId: string | undefined;
-    email: string | null | undefined;
-    emailVerified: boolean | undefined;
-    isAnonymous: boolean | undefined;
-    tenantId: string | null | undefined;
-    providerInfo: {
-      providerId: string;
-      displayName: string | null;
-      email: string | null;
-      photoUrl: string | null;
-    }[];
-  }
-}
-
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
-        providerId: provider.providerId,
-        displayName: provider.displayName,
-        email: provider.email,
-        photoUrl: provider.photoURL
-      })) || []
-    },
-    operationType,
-    path
-  }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
 
 interface SavingChallengesProps {
   uid: string;
@@ -195,10 +143,10 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
             <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl">
               <Trophy size={24} className="text-white" />
             </div>
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-indigo-100">Saving Quests</span>
+            <span className="text-[13px] font-black uppercase tracking-[0.2em] text-[#ebedf3]">Saving Quests</span>
           </div>
-          <h2 className="text-4xl font-black mb-2 tracking-tight">Gamify Your Savings</h2>
-          <p className="text-indigo-100 max-w-md text-sm leading-relaxed opacity-80">
+          <h3 className="text-[28px] font-black mb-2 tracking-tight">Gamify Your Savings</h3>
+          <p className="text-indigo-100 max-w-md text-[15px] leading-relaxed opacity-80">
             Turn your financial goals into epic quests. Earn points, build streaks, and master your money.
           </p>
         </div>
@@ -209,7 +157,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
         
         <button
           onClick={() => setShowAddModal(true)}
-          className="absolute bottom-8 right-8 z-20 p-4 bg-white text-indigo-600 rounded-2xl font-black shadow-xl hover:scale-105 transition-transform flex items-center gap-2"
+          className="absolute bottom-8 right-8 z-20 p-4 bg-white text-indigo-600 rounded-2xl font-black shadow-xl hover:scale-105 transition-transform flex items-center gap-2 text-[14px]"
         >
           <Plus size={24} />
           <span className="text-sm uppercase tracking-widest">New Quest</span>
@@ -228,7 +176,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
             <div className={`p-2 ${stat.bg} ${stat.color} rounded-xl mb-2`}>
               <stat.icon size={20} />
             </div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">{stat.label}</p>
+            <p className="text-[12px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1">{stat.label}</p>
             <p className="text-xl font-black text-zinc-900 dark:text-white">{stat.value}</p>
           </div>
         ))}
@@ -251,7 +199,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
                   <Target size={28} />
                 </div>
                 <div className="flex flex-col items-end">
-                  <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${getStatusColor(challenge.status)}`}>
+                  <div className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${getStatusColor(challenge.status)}`}>
                     {challenge.status}
                   </div>
                   <div className="mt-2 flex items-center gap-1 text-amber-500">
@@ -262,7 +210,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
               </div>
 
               <div className="space-y-2 mb-6">
-                <h3 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight leading-tight">
+                <h3 className="text-[15px] font-black text-zinc-900 dark:text-white tracking-tight leading-tight">
                   {challenge.title}
                 </h3>
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
@@ -273,12 +221,12 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
               <div className="space-y-4">
                 <div className="flex justify-between items-end">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Progress</span>
+                    <span className="text-[12px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Progress</span>
                     <div className="flex items-baseline gap-1">
                       <span className="text-2xl font-black text-zinc-900 dark:text-white">
                         {currencySymbol}{challenge.currentAmount.toLocaleString()}
                       </span>
-                      <span className="text-xs font-bold text-zinc-400">
+                      <span className="text-[13px] font-bold text-zinc-400">
                         / {currencySymbol}{challenge.targetAmount.toLocaleString()}
                       </span>
                     </div>
@@ -319,7 +267,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
                 {challenge.status === 'completed' && (
                   <div className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 text-emerald-500 rounded-2xl">
                     <CheckCircle2 size={18} />
-                    <span className="text-xs font-black uppercase tracking-widest">Quest Mastered</span>
+                    <span className="text-sm font-black uppercase tracking-widest">Quest Mastered</span>
                   </div>
                 )}
               </div>
@@ -374,7 +322,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
               <div className="p-8 border-b border-zinc-100 dark:border-white/5 flex justify-between items-center">
                 <div>
                   <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">New Quest</h3>
-                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">Define your challenge</p>
+                  <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mt-1">Define your challenge</p>
                 </div>
                 <button onClick={() => setShowAddModal(false)} className="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
                   <XCircle size={32} />
@@ -385,7 +333,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Quest Name</label>
+                      <label className="block text-[11px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2">Quest Name</label>
                       <input
                         required
                         type="text"
@@ -397,7 +345,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Description</label>
+                      <label className="block text-[11px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2">Description</label>
                       <textarea
                         required
                         value={newChallenge.description}
@@ -410,7 +358,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Target Amount ({currencySymbol})</label>
+                      <label className="block text-[11px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2">Target Amount ({currencySymbol})</label>
                       <input
                         required
                         type="number"
@@ -422,7 +370,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Quest Duration (Days)</label>
+                      <label className="block text-[11px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2">Quest Duration (Days)</label>
                       <div className="grid grid-cols-3 gap-2">
                         {[7, 14, 30].map(days => (
                           <button
@@ -440,7 +388,7 @@ export default function SavingChallenges({ uid, currencySymbol }: SavingChalleng
                     <div className="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-3xl space-y-2">
                       <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
                         <Award size={18} />
-                        <span className="text-xs font-black uppercase tracking-widest">Potential Reward</span>
+                        <span className="text-sm font-black uppercase tracking-widest">Potential Reward</span>
                       </div>
                       <p className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
                         +{newChallenge.reward} XP

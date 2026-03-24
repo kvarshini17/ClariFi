@@ -8,59 +8,8 @@ import {
   MessageCircle, User, AtSign, Type, FileText, Plus
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
-import { db, auth } from '../firebase';
+import { db, auth, handleFirestoreError, OperationType } from '../firebase';
 import { collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot, Timestamp, updateDoc, doc, getDocFromServer } from 'firebase/firestore';
-
-enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
-}
-
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId: string | undefined;
-    email: string | null | undefined;
-    emailVerified: boolean | undefined;
-    isAnonymous: boolean | undefined;
-    tenantId: string | null | undefined;
-    providerInfo: {
-      providerId: string;
-      displayName: string | null;
-      email: string | null;
-      photoUrl: string | null;
-    }[];
-  }
-}
-
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
-        providerId: provider.providerId,
-        displayName: provider.displayName,
-        email: provider.email,
-        photoUrl: provider.photoURL
-      })) || []
-    },
-    operationType,
-    path
-  };
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -215,7 +164,7 @@ const AIChatModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, onClose:
                   <h3 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">Clari Assistant</h3>
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Online</span>
+                    <span className="text-[11px] font-bold text-emerald-500 uppercase tracking-widest">Online</span>
                   </div>
                 </div>
               </div>
@@ -372,7 +321,7 @@ const ContactUsModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, onClo
               ) : (
                 <form onSubmit={handleContactSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                    <label className="text-[13px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                       <Type size={12} />
                       Subject
                     </label>
@@ -386,7 +335,7 @@ const ContactUsModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, onClo
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                    <label className="text-[13px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                       <FileText size={12} />
                       Message
                     </label>
@@ -433,18 +382,18 @@ const CategoryCard = React.memo(({ cat, index }: { cat: any, index: number }) =>
     viewport={{ once: true }}
     transition={{ delay: index * 0.05 }}
     onClick={cat.onClick}
-    className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 p-8 rounded-[40px] space-y-8 hover:border-emerald-500/30 transition-all group cursor-pointer shadow-xl shadow-black/5 relative overflow-hidden will-change-transform"
+    className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 p-8 rounded-[40px] space-y-8 hover:border-emerald-500/30 transition-all group cursor-pointer shadow-xl shadow-black/5 relative overflow-hidden will-change-transform w-[298px] h-[308.075px]"
   >
     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-2xl -mr-16 -mt-16 group-hover:bg-emerald-500/10 transition-colors hidden sm:block" />
-    <div className="w-16 h-16 bg-zinc-50 dark:bg-white/5 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform relative z-10 will-change-transform">
+    <div className="w-16 h-16 bg-zinc-50 dark:bg-white/5 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform relative z-10 will-change-transform pt-[30px] pb-[30px]">
       {cat.icon}
     </div>
     <div className="space-y-3 relative z-10">
-      <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">{cat.title}</h3>
-      <p className="text-zinc-500 text-sm leading-relaxed font-medium">{cat.description}</p>
+      <h3 className="text-[25px] font-black text-zinc-900 dark:text-white tracking-tight">{cat.title}</h3>
+      <p className="text-zinc-500 text-[15px] leading-relaxed font-medium">{cat.description}</p>
     </div>
     <div className="pt-4 relative z-10">
-      <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-500 group-hover:gap-4 transition-all">
+      <div className="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-widest text-emerald-500 group-hover:gap-4 transition-all w-[149.475px] h-[29px] leading-[34px]">
         {cat.action}
         <ExternalLink size={14} />
       </div>
@@ -490,10 +439,10 @@ const SystemHealth = React.memo(({ systemStatus }: { systemStatus: any[] }) => (
       {systemStatus.map((service, i) => (
         <div key={i} className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{service.name}</span>
+            <span className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">{service.name}</span>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{service.status}</span>
+              <span className="text-[11px] font-black text-emerald-500 uppercase tracking-widest">{service.status}</span>
             </div>
           </div>
           <div className="h-1.5 w-full bg-zinc-100 dark:bg-white/5 rounded-full overflow-hidden">
@@ -528,7 +477,7 @@ const ResourceCard = React.memo(({ icon: Icon, title, subtitle, onClick, colorCl
       </div>
       <div>
         <p className="font-black text-zinc-900 dark:text-white text-xl tracking-tight">{title}</p>
-        <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">{subtitle}</p>
+        <p className="text-[11px] text-zinc-500 uppercase font-bold tracking-widest">{subtitle}</p>
       </div>
     </div>
     <div className={`w-10 h-10 rounded-full bg-zinc-50 dark:bg-white/5 flex items-center justify-center text-zinc-400 group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-zinc-950 transition-all`}>
@@ -554,31 +503,32 @@ const TicketItem = React.memo(({ ticket, isAdmin, onReply, onClose, isReplying, 
     animate={{ opacity: 1, y: 0 }}
     className="p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[32px] space-y-6 shadow-xl shadow-black/5 will-change-transform"
   >
-    <div className="flex justify-between items-start gap-4">
-      <div className="space-y-1">
+    <div className="flex flex-col gap-4">
+      <div className="space-y-2">
         <h4 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight">{ticket.subject}</h4>
-        <div className="flex items-center gap-3">
-          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest flex items-center gap-1.5">
+        <div className="flex flex-col gap-2">
+          <p className="text-[11px] text-zinc-500 font-bold uppercase tracking-widest flex items-center gap-1.5">
             <User size={10} />
             {(ticket as any).email}
           </p>
-          <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+          <p className="text-[12px] text-zinc-500 font-bold uppercase tracking-widest">
             {ticket.createdAt?.toDate().toLocaleDateString()}
           </p>
+          <div className="pt-1">
+            <span className={`px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border inline-block ${
+              ticket.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+              ticket.status === 'replied' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+              'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+            }`}>
+              {ticket.status}
+            </span>
+          </div>
         </div>
       </div>
-      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-        ticket.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-        ticket.status === 'replied' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
-        'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-      }`}>
-        {ticket.status}
-      </span>
     </div>
     
     <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-100 dark:border-white/5">
-      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">{ticket.message}</p>
+      <p className="text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">{ticket.message}</p>
     </div>
     
     {ticket.reply && (
@@ -586,7 +536,7 @@ const TicketItem = React.memo(({ ticket, isAdmin, onReply, onClose, isReplying, 
         <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500" />
         <div className="flex items-center gap-2">
           <Bot size={14} className="text-emerald-500" />
-          <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Official Response</p>
+          <p className="text-[11px] font-black text-emerald-500 uppercase tracking-widest">Official Response</p>
         </div>
         <p className="text-sm text-zinc-900 dark:text-white font-bold leading-relaxed">{ticket.reply}</p>
       </div>
@@ -597,7 +547,7 @@ const TicketItem = React.memo(({ ticket, isAdmin, onReply, onClose, isReplying, 
         {isReplying ? (
           <form onSubmit={onSendReply} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Your Response</label>
+              <label className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">Your Response</label>
               <textarea 
                 required
                 autoFocus
@@ -612,14 +562,14 @@ const TicketItem = React.memo(({ ticket, isAdmin, onReply, onClose, isReplying, 
               <button 
                 type="submit"
                 disabled={isSubmitting}
-                className="px-8 py-3 bg-emerald-500 text-zinc-950 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-50 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
+                className="px-8 py-3 bg-emerald-500 text-zinc-950 rounded-xl text-[11px] font-black uppercase tracking-widest disabled:opacity-50 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
               >
                 {isSubmitting ? "Sending..." : "Send Reply"}
               </button>
               <button 
                 type="button"
                 onClick={onCancelReply}
-                className="px-8 py-3 bg-zinc-100 dark:bg-white/5 text-zinc-900 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 dark:hover:bg-white/10 transition-all"
+                className="px-8 py-3 bg-zinc-100 dark:bg-white/5 text-zinc-900 dark:text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-zinc-200 dark:hover:bg-white/10 transition-all"
               >
                 Cancel
               </button>
@@ -629,14 +579,14 @@ const TicketItem = React.memo(({ ticket, isAdmin, onReply, onClose, isReplying, 
           <div className="flex gap-3">
             <button 
               onClick={() => onReply(ticket.id)}
-              className="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-black/10 dark:shadow-white/10"
+              className="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl text-[11px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-black/10 dark:shadow-white/10"
             >
               Reply to User
             </button>
             {ticket.status !== 'closed' && (
               <button 
                 onClick={() => onClose(ticket.id)}
-                className="px-8 py-3 bg-zinc-100 dark:bg-white/5 text-zinc-900 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 dark:hover:bg-white/10 transition-all"
+                className="px-8 py-3 bg-zinc-100 dark:bg-white/5 text-zinc-900 dark:text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-zinc-200 dark:hover:bg-white/10 transition-all"
               >
                 Close Ticket
               </button>
@@ -735,7 +685,7 @@ const MyTicketsModal = React.memo(({
                 {ticketSearch && (
                   <button 
                     onClick={() => setTicketSearch('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-zinc-100 dark:bg-white/5 text-zinc-500 hover:text-zinc-900 dark:hover:text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-zinc-100 dark:bg-white/5 text-zinc-500 hover:text-zinc-900 dark:hover:text-white rounded-lg text-[11px] font-black uppercase tracking-widest transition-all"
                   >
                     Clear
                   </button>
@@ -810,7 +760,7 @@ const DocumentationModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, o
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">Docs</h3>
-                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">v2.4.0</p>
+                  <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">v2.4.0</p>
                 </div>
               </div>
               <nav className="flex flex-row md:flex-col gap-2 md:gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
@@ -823,7 +773,7 @@ const DocumentationModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, o
                   <button
                     key={item.id}
                     onClick={() => setActiveDocSection(item.id)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] md:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
                       activeDocSection === item.id 
                         ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' 
                         : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/5'
@@ -864,7 +814,7 @@ const DocumentationModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, o
                         <ul className="space-y-3">
                           {['Connect your bank accounts', 'Set your monthly savings goal', 'Scan your first receipt', 'Create your first budget'].map((step, i) => (
                             <li key={i} className="flex items-center gap-3 text-sm text-zinc-500 font-medium">
-                              <div className="w-5 h-5 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 text-[10px] font-black">
+                              <div className="w-5 h-5 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 text-[11px] font-black">
                                 {i + 1}
                               </div>
                               {step}
@@ -974,7 +924,7 @@ const UserGuideModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, onClo
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">Guide</h3>
-                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">User Manual</p>
+                  <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">User Manual</p>
                 </div>
               </div>
               <nav className="flex flex-row md:flex-col gap-2 md:gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
@@ -982,12 +932,13 @@ const UserGuideModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, onClo
                   { id: 'dashboard', label: 'Dash', fullLabel: 'Dashboard', icon: <Bot size={14} /> },
                   { id: 'transactions', label: 'Txns', fullLabel: 'Transactions', icon: <Plus size={14} /> },
                   { id: 'budgets', label: 'Budgets', fullLabel: 'Budgets', icon: <LifeBuoy size={14} /> },
-                  { id: 'goals', label: 'Goals', fullLabel: 'Goals', icon: <CheckCircle2 size={14} /> }
+                  { id: 'goals', label: 'Goals', fullLabel: 'Goals', icon: <CheckCircle2 size={14} /> },
+                  { id: 'support', label: 'Help', fullLabel: 'Support & Help', icon: <HelpCircle size={14} /> }
                 ].map((item) => (
                   <button
                     key={item.id}
                     onClick={() => setActiveGuideSection(item.id)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] md:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
                       activeGuideSection === item.id 
                         ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' 
                         : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/5'
@@ -1025,11 +976,11 @@ const UserGuideModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, onClo
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10">
-                          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">Total Balance</p>
+                          <p className="text-[11px] font-black text-zinc-400 uppercase tracking-widest mb-2">Total Balance</p>
                           <p className="text-2xl font-black text-zinc-900 dark:text-white">$12,450.00</p>
                         </div>
                         <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10">
-                          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">Monthly Spend</p>
+                          <p className="text-[11px] font-black text-zinc-400 uppercase tracking-widest mb-2">Monthly Spend</p>
                           <p className="text-2xl font-black text-emerald-500">$3,210.00</p>
                         </div>
                       </div>
@@ -1084,6 +1035,29 @@ const UserGuideModal = React.memo(({ isOpen, onClose }: { isOpen: boolean, onClo
                       </div>
                     </div>
                   )}
+
+                  {activeGuideSection === 'support' && (
+                    <div className="space-y-6">
+                      <h4 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">Support & Help</h4>
+                      <p className="text-lg text-zinc-500 leading-relaxed font-medium">
+                        Need assistance? We're here to help you get the most out of ClariFi.
+                      </p>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10 space-y-2">
+                          <h5 className="font-black text-zinc-900 dark:text-white">AI Assistant (Clari)</h5>
+                          <p className="text-sm text-zinc-500 font-medium">Use the AI Chat for instant answers to common questions and financial guidance.</p>
+                        </div>
+                        <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10 space-y-2">
+                          <h5 className="font-black text-zinc-900 dark:text-white">Direct Support</h5>
+                          <p className="text-sm text-zinc-500 font-medium">Submit a ticket through the 'Contact Us' section for personalized help from our team.</p>
+                        </div>
+                        <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10 space-y-2">
+                          <h5 className="font-black text-zinc-900 dark:text-white">Documentation</h5>
+                          <p className="text-sm text-zinc-500 font-medium">Browse our extensive documentation for deep dives into every feature.</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -1121,7 +1095,7 @@ const SecurityWhitepaperModal = React.memo(({ isOpen, onClose }: { isOpen: boole
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">Security</h3>
-                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Whitepaper</p>
+                  <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">Whitepaper</p>
                 </div>
               </div>
               <nav className="flex flex-row md:flex-col gap-2 md:gap-1 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
@@ -1129,12 +1103,13 @@ const SecurityWhitepaperModal = React.memo(({ isOpen, onClose }: { isOpen: boole
                   { id: 'encryption', label: 'AES', fullLabel: 'Encryption', icon: <Shield size={14} /> },
                   { id: 'auth', label: 'Auth', fullLabel: 'Authentication', icon: <User size={14} /> },
                   { id: 'isolation', label: 'Isolation', fullLabel: 'Data Isolation', icon: <Search size={14} /> },
-                  { id: 'compliance', label: 'Legal', fullLabel: 'Compliance', icon: <CheckCircle2 size={14} /> }
+                  { id: 'compliance', label: 'Legal', fullLabel: 'Compliance', icon: <CheckCircle2 size={14} /> },
+                  { id: 'privacy', label: 'Privacy', fullLabel: 'Data Privacy', icon: <AtSign size={14} /> }
                 ].map((item) => (
                   <button
                     key={item.id}
                     onClick={() => setActiveSecuritySection(item.id)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] md:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
                       activeSecuritySection === item.id 
                         ? 'bg-emerald-500 text-zinc-950 shadow-lg shadow-emerald-500/20' 
                         : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/5'
@@ -1230,6 +1205,25 @@ const SecurityWhitepaperModal = React.memo(({ isOpen, onClose }: { isOpen: boole
                             <span className="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-widest">{item}</span>
                           </div>
                         ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeSecuritySection === 'privacy' && (
+                    <div className="space-y-6">
+                      <h4 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">Data Privacy</h4>
+                      <p className="text-lg text-zinc-500 leading-relaxed font-medium">
+                        Your privacy is at the core of everything we build. We believe you should always be in control of your data.
+                      </p>
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10 space-y-2">
+                          <h5 className="font-black text-zinc-900 dark:text-white">No Data Selling</h5>
+                          <p className="text-sm text-zinc-500 font-medium leading-relaxed">We never sell your personal or financial data to third parties. Your information is used solely to provide you with the ClariFi service.</p>
+                        </div>
+                        <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10 space-y-2">
+                          <h5 className="font-black text-zinc-900 dark:text-white">Anonymized AI</h5>
+                          <p className="text-sm text-zinc-500 font-medium leading-relaxed">When our AI analyzes your spending, it does so using anonymized data points to protect your identity while providing accurate insights.</p>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1384,23 +1378,35 @@ export default function Support({ onBack }: SupportProps) {
   const faqs = [
     {
       question: "How secure is my financial data?",
-      answer: "We use bank-grade encryption and strict Firestore security rules. Your data is only accessible by you. We never share your personal financial information with third parties."
+      answer: "We use bank-grade encryption and strict Firestore security rules. Your data is only accessible by you. We never share your personal financial information with third parties. All data is encrypted both in transit and at rest."
     },
     {
       question: "Can I export my transaction history?",
-      answer: "Yes, you can export your data in CSV or PDF format from the Settings > General tab. This allows you to use your data in other spreadsheet applications."
+      answer: "Yes, you can export your data in CSV or PDF format from the Settings > General tab. This allows you to use your data in other spreadsheet applications or for tax purposes."
     },
     {
       question: "How does the AI receipt scanner work?",
-      answer: "Our AI uses advanced OCR and natural language processing to extract amounts, categories, and dates from your photos. Simply upload a clear photo of your receipt and we'll do the rest."
+      answer: "Our AI uses advanced OCR and natural language processing to extract amounts, categories, and dates from your photos. Simply upload a clear photo of your receipt and we'll do the rest. It's the fastest way to track your spending."
     },
     {
       question: "What is the Financial DNA score?",
-      answer: "Your Financial DNA is a unique profile calculated based on your spending habits, savings rate, and category distribution. It helps you understand your financial personality."
+      answer: "Your Financial DNA is a unique profile calculated based on your spending habits, savings rate, and category distribution. It helps you understand your financial personality and provides tailored advice for improvement."
     },
     {
       question: "How do I set up a budget?",
-      answer: "Navigate to the Budgets tab and click 'Add Budget'. You can set monthly limits for specific categories like Food, Travel, or Entertainment."
+      answer: "Navigate to the Budgets tab and click 'Add Budget'. You can set monthly limits for specific categories like Food, Travel, or Entertainment. We'll notify you when you're close to your limit."
+    },
+    {
+      question: "How do I contact support?",
+      answer: "You can contact our support team by clicking the 'Contact Us' card above. We typically respond within 24 hours. Alternatively, you can use our AI assistant, Clari, for immediate help with common questions."
+    },
+    {
+      question: "Is there a mobile app available?",
+      answer: "ClariFi is a progressive web app (PWA), which means you can install it on your home screen for a native-like experience on both iOS and Android devices."
+    },
+    {
+      question: "How do I reset my account data?",
+      answer: "If you wish to start fresh, you can delete all your transactions and reset your profile from the Settings > General tab. Please note that this action is irreversible."
     }
   ];
 
@@ -1423,14 +1429,14 @@ export default function Support({ onBack }: SupportProps) {
       <div className="space-y-12 md:space-y-16 pb-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[11px] font-black uppercase tracking-widest">
             <LifeBuoy size={12} />
-            Support Center
+            Support & Help Center
           </div>
-          <h2 className="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white tracking-tighter leading-tight md:leading-none">
+          <h3 className="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white tracking-tighter leading-tight md:leading-none">
             How can we <br className="hidden md:block" />
             <span className="text-emerald-500">help you?</span>
-          </h2>
+          </h3>
           <p className="text-zinc-500 text-base md:text-lg font-medium max-w-md leading-relaxed">
             Get instant answers from Clari, browse our guides, or reach out to our human support team.
           </p>
@@ -1440,7 +1446,7 @@ export default function Support({ onBack }: SupportProps) {
           className="w-full md:w-auto px-8 py-4 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-white/5 text-zinc-900 dark:text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all border border-zinc-200 dark:border-white/10 shadow-xl shadow-black/5 flex items-center justify-center gap-2 group"
         >
           <X size={16} className="group-hover:rotate-90 transition-transform" />
-          Close Support
+          Close Support & Help
         </button>
       </div>
 

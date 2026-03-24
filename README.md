@@ -33,4 +33,6 @@ Your trust is our priority. ClariFi is built with industry-standard security mea
 
 Access our **Terms & Conditions** and **Privacy Policy** directly from the user profile dropdown in the application.
 
+---
+
 © 2026 ClariFi • Clarity in Every Expense.

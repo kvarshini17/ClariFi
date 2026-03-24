@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { collection, addDoc, serverTimestamp, updateDoc, doc, arrayUnion } from 'firebase/firestore';
+import { db, auth, handleFirestoreError, OperationType } from '../firebase';
 import { createNotification } from '../services/notificationService';
 import { Category, TransactionType, Budget } from '../types';
-import { X, DollarSign, Calendar, Tag, FileText, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { motion } from 'motion/react';
+import { X, DollarSign, Calendar, Tag, FileText, ArrowUpRight, ArrowDownRight, Plus as PlusIcon, Settings2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface TransactionFormProps {
   onClose: () => void;
@@ -13,78 +13,37 @@ interface TransactionFormProps {
   budgets?: Budget[];
   transactions?: any[];
   initialData?: { amount: number; category: string; note: string } | null;
+  customCategories?: string[];
 }
 
-enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
-}
+const DEFAULT_EXPENSE_CATEGORIES = ['Food', 'Travel', 'Bills', 'Shopping', 'Health', 'Entertainment'];
+const INCOME_CATEGORIES = ['Income'];
 
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId: string | undefined;
-    email: string | null | undefined;
-    emailVerified: boolean | undefined;
-    isAnonymous: boolean | undefined;
-    tenantId: string | null | undefined;
-    providerInfo: {
-      providerId: string;
-      displayName: string | null;
-      email: string | null;
-      photoUrl: string | null;
-    }[];
-  }
-}
-
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
-        providerId: provider.providerId,
-        displayName: provider.displayName,
-        email: provider.email,
-        photoUrl: provider.photoURL
-      })) || []
-    },
-    operationType,
-    path
-  }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
-}
-
-const EXPENSE_CATEGORIES: Category[] = ['Food', 'Travel', 'Bills', 'Shopping', 'Health', 'Entertainment', 'Others'];
-const INCOME_CATEGORIES: Category[] = ['Income'];
-
-export default function TransactionForm({ onClose, uid, currencySymbol, budgets = [], transactions = [], initialData }: TransactionFormProps) {
+export default function TransactionForm({ onClose, uid, currencySymbol, budgets = [], transactions = [], initialData, customCategories = [] }: TransactionFormProps) {
   const [amount, setAmount] = useState(initialData?.amount?.toString() || '');
   const [type, setType] = useState<TransactionType>('expense');
-  const [category, setCategory] = useState<Category>((initialData?.category as Category) || 'Food');
+  const [category, setCategory] = useState<string>(initialData?.category || 'Food');
+  const [isCustom, setIsCustom] = useState(initialData?.category ? !DEFAULT_EXPENSE_CATEGORIES.includes(initialData.category) && initialData.category !== 'Others' : false);
+  const [customCategory, setCustomCategory] = useState(initialData?.category && !DEFAULT_EXPENSE_CATEGORIES.includes(initialData.category) && initialData.category !== 'Others' ? initialData.category : '');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState(initialData?.note || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const categories = type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+  const categories = type === 'expense' ? DEFAULT_EXPENSE_CATEGORIES : INCOME_CATEGORIES;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const numAmount = Number(amount);
     if (!amount || isNaN(numAmount) || numAmount <= 0) {
       setError("Please enter a valid positive amount.");
+      return;
+    }
+
+    const finalCategory = type === 'income' ? 'Income' : (isCustom ? customCategory.trim() || 'Others' : category);
+
+    if (type === 'expense' && isCustom && !customCategory.trim()) {
+      setError("Please enter a custom category name.");
       return;
     }
 
@@ -95,7 +54,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
       await addDoc(collection(db, path), {
         uid,
         amount: numAmount,
-        category: type === 'income' ? 'Income' : category,
+        category: finalCategory,
         type,
         date: (() => {
           try {
@@ -108,6 +67,17 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
         note: note.trim(),
         createdAt: serverTimestamp()
       });
+
+      // Save custom category to user profile if it's new
+      if (isCustom && finalCategory !== 'Others' && !DEFAULT_EXPENSE_CATEGORIES.includes(finalCategory) && !customCategories.includes(finalCategory)) {
+        try {
+          await updateDoc(doc(db, 'users', uid), {
+            customCategories: arrayUnion(finalCategory)
+          });
+        } catch (err) {
+          console.error("Error saving custom category:", err);
+        }
+      }
 
       // Budget Check
       if (type === 'expense') {
@@ -152,8 +122,8 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
     <div className="p-6 sm:p-10 bg-white dark:bg-zinc-950 transition-colors">
       <div className="flex justify-between items-center mb-8">
         <div className="space-y-1">
-          <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">New Entry</h2>
-          <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Record your {type}</p>
+          <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">New Entry</h3>
+          <p className="text-[#ceceda] text-[11px] font-bold uppercase tracking-widest">Record your {type}</p>
         </div>
         <button 
           onClick={onClose}
@@ -179,13 +149,13 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
               setType('expense');
               setCategory('Food');
             }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-base font-sans font-black uppercase tracking-widest transition-all ${
               type === 'expense' 
                 ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' 
                 : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
-            <ArrowDownRight size={14} />
+            <ArrowDownRight size={18} />
             Expense
           </button>
           <button
@@ -194,19 +164,19 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
               setType('income');
               setCategory('Income');
             }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-base font-sans font-black uppercase tracking-widest transition-all ${
               type === 'income' 
                 ? 'bg-emerald-500 text-zinc-950 shadow-lg shadow-emerald-500/20' 
                 : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
-            <ArrowUpRight size={14} />
+            <ArrowUpRight size={18} />
             Income
           </button>
         </div>
 
         <div className="space-y-3">
-          <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+          <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
             Amount ({currencySymbol})
           </label>
           <div className="relative">
@@ -230,17 +200,22 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
 
         {type === 'expense' && (
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+            <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
               Category
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {EXPENSE_CATEGORIES.map((cat) => (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+              {DEFAULT_EXPENSE_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => setCategory(cat)}
-                  className={`px-2 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
-                    category === cat 
+                  onClick={() => {
+                    setCategory(cat);
+                    setIsCustom(false);
+                  }}
+                  className={`px-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all ${
+                    cat === 'Entertainment' ? 'col-span-2 sm:col-span-2' : ''
+                  } ${
+                    category === cat && !isCustom
                       ? 'bg-red-500/20 border-red-500 text-red-400' 
                       : 'bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/5 text-zinc-500 hover:border-zinc-300 dark:hover:border-white/20'
                   }`}
@@ -248,13 +223,67 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
                   {cat}
                 </button>
               ))}
+              
+              {/* Custom categories from user profile */}
+              {customCategories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => {
+                    setCategory(cat);
+                    setIsCustom(false);
+                  }}
+                  className={`px-2 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
+                    category === cat && !isCustom
+                      ? 'bg-red-500/20 border-red-500 text-red-400' 
+                      : 'bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/5 text-zinc-500 hover:border-zinc-300 dark:hover:border-white/20'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCustom(true);
+                  setCategory('Others');
+                }}
+                className={`px-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all flex items-center justify-center gap-2 ${
+                  isCustom
+                    ? 'bg-red-500/20 border-red-500 text-red-400' 
+                    : 'bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/5 text-zinc-500 hover:border-zinc-300 dark:hover:border-white/20'
+                }`}
+              >
+                <Settings2 size={19} style={{ width: '23px', height: '19px' }} className="text-[#d6d6e7]" />
+                <span>Others</span>
+              </button>
             </div>
+
+            <AnimatePresence>
+              {isCustom && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <input 
+                    type="text"
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    placeholder="Enter custom category..."
+                    className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3 px-5 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 focus:ring-red-500 outline-none transition-all font-bold text-sm mt-2"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+            <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
               Date
             </label>
             <input 
@@ -267,7 +296,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
           </div>
 
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+            <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
               Note
             </label>
             <input 

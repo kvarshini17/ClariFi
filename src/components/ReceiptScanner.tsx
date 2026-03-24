@@ -90,11 +90,11 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
         <div className="p-8 sm:p-12 space-y-8">
           <div className="flex justify-between items-center">
             <div className="space-y-1">
-              <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-3">
+              <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-3">
                 <Sparkles className="text-emerald-400" size={28} />
                 Receipt Scanner
-              </h2>
-              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">AI-Powered Data Extraction</p>
+              </h3>
+              <p className="text-[#ceceda] text-sm font-bold uppercase tracking-widest">AI-Powered Data Extraction</p>
             </div>
             <button 
               onClick={onClose}
@@ -188,7 +188,7 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
             </div>
           )}
 
-          <div className="flex items-center justify-center gap-2 text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em]">
+          <div className="flex items-center justify-center gap-2 text-zinc-500 text-[11px] font-black uppercase tracking-[0.3em]">
             <CheckCircle2 size={12} className="text-emerald-500" />
             Secure & Private Processing
           </div>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Transaction, Category } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -52,7 +53,8 @@ interface FinancialRecapProps {
 
 type RecapMode = 'monthly' | 'yearly';
 
-export default function FinancialRecap({ transactions, currencySymbol }: FinancialRecapProps) {
+export default React.memo(function FinancialRecap({ transactions, currencySymbol }: FinancialRecapProps) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<RecapMode>('monthly');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [step, setStep] = useState(0);
@@ -133,21 +135,21 @@ export default function FinancialRecap({ transactions, currencySymbol }: Financi
     }
 
     // Determine "Financial Vibe"
-    let vibe = "The Balanced Budgeter";
-    let vibeDesc = "You kept things steady and predictable.";
+    let vibe = t('recap.vibe_balanced');
+    let vibeDesc = t('recap.vibe_balanced_desc');
     
     if (topCategory?.[0] === 'Travel') {
-      vibe = "The Global Nomad";
-      vibeDesc = "Your passport saw more action than your savings account!";
+      vibe = t('recap.vibe_nomad');
+      vibeDesc = t('recap.vibe_nomad_desc');
     } else if (topCategory?.[0] === 'Food') {
-      vibe = "The Culinary Explorer";
-      vibeDesc = "You literally ate your way through the period. Delicious!";
+      vibe = t('recap.vibe_explorer');
+      vibeDesc = t('recap.vibe_explorer_desc');
     } else if (topCategory?.[0] === 'Shopping') {
-      vibe = "The Trendsetter";
-      vibeDesc = "Retail therapy was your primary form of self-care.";
+      vibe = t('recap.vibe_trendsetter');
+      vibeDesc = t('recap.vibe_trendsetter_desc');
     } else if (totalIncome > totalSpent * 2) {
-      vibe = "The Wealth Architect";
-      vibeDesc = "You're building an empire, one saved dollar at a time.";
+      vibe = t('recap.vibe_architect');
+      vibeDesc = t('recap.vibe_architect_desc');
     }
 
     return {
@@ -164,11 +166,11 @@ export default function FinancialRecap({ transactions, currencySymbol }: Financi
   }, [transactions, selectedDate, mode]);
 
   const steps = [
-    { title: "Your Recap", color: "from-blue-600 to-indigo-700" },
-    { title: "The Big Picture", color: "from-emerald-500 to-teal-700" },
-    { title: "Category Spotlight", color: "from-purple-600 to-pink-700" },
-    { title: "Spending Rhythm", color: "from-orange-500 to-rose-700" },
-    { title: "Your Vibe", color: "from-zinc-800 to-zinc-950" }
+    { title: t('recap.steps.recap'), color: "from-blue-600 to-indigo-700" },
+    { title: t('recap.steps.big_picture'), color: "from-emerald-500 to-teal-700" },
+    { title: t('recap.steps.spotlight'), color: "from-purple-600 to-pink-700" },
+    { title: t('recap.steps.rhythm'), color: "from-orange-500 to-rose-700" },
+    { title: t('recap.steps.vibe'), color: "from-zinc-800 to-zinc-950" }
   ];
 
   const handleExportImage = async () => {
@@ -213,16 +215,16 @@ export default function FinancialRecap({ transactions, currencySymbol }: Financi
         file = fallbackFile;
       }
 
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: `${recapData?.periodLabel} Financial Recap`,
-          text: `Check out my ${recapData?.periodLabel} recap on ClariFi!`
+          title: t('recap.period_recap', { period: recapData?.periodLabel }),
+          text: t('recap.share_text', { period: recapData?.periodLabel })
         });
       } else {
         // Fallback to download if sharing files is not supported
         handleExportImage();
-        alert('Image sharing is not supported on this browser. The image has been downloaded instead.');
+        alert(t('recap.share_not_supported'));
       }
     } catch (err) {
       console.error('Error sharing image:', err);
@@ -232,20 +234,21 @@ export default function FinancialRecap({ transactions, currencySymbol }: Financi
   };
 
   const handleShare = async () => {
-    const shareText = `My ${recapData?.periodLabel} Financial Recap on ClariFi:
-💰 Total Spent: ${currencySymbol}${recapData?.totalSpent.toLocaleString()}
-📈 Total Income: ${currencySymbol}${recapData?.totalIncome.toLocaleString()}
-🏷️ Top Category: ${recapData?.topCategory?.[0]}
-✨ My Vibe: ${recapData?.vibe}
-
-Check out your own recap on ClariFi!`;
+    const shareText = t('recap.share_full_text', {
+      period: recapData?.periodLabel,
+      spent: recapData?.totalSpent.toLocaleString(),
+      income: recapData?.totalIncome.toLocaleString(),
+      category: recapData?.topCategory?.[0] || t('common.none'),
+      vibe: recapData?.vibe,
+      currency: currencySymbol
+    });
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${recapData?.periodLabel} Financial Recap`,
+          title: t('recap.period_recap', { period: recapData?.periodLabel }),
           text: shareText,
-          url: window.location.origin
+          url: 'https://clarifi-gamma.vercel.app'
         });
       } catch (err) {
         console.error('Error sharing:', err);
@@ -253,7 +256,7 @@ Check out your own recap on ClariFi!`;
     } else {
       try {
         await navigator.clipboard.writeText(shareText);
-        alert('Recap summary copied to clipboard!');
+        alert(t('recap.share_summary_copied'));
       } catch (err) {
         console.error('Failed to copy:', err);
       }
@@ -267,8 +270,8 @@ Check out your own recap on ClariFi!`;
           <Calendar className="text-zinc-400" size={40} />
         </div>
         <div className="space-y-2">
-          <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">No Data Found</h3>
-          <p className="text-zinc-500 font-medium">Try selecting a different period.</p>
+          <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">{t('recap.no_data')}</h3>
+          <p className="text-zinc-500 font-medium">{t('recap.try_different')}</p>
         </div>
         <div className="flex justify-center gap-4">
           <button 
@@ -279,15 +282,15 @@ Check out your own recap on ClariFi!`;
           </button>
           <button 
             onClick={() => setSelectedDate(new Date())}
-            className="px-4 py-2 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest"
+            className="px-4 py-2 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-white/10 text-[11px] font-black uppercase tracking-widest"
           >
-            Today
+            {t('recap.today')}
           </button>
           <button 
             onClick={() => setMode(mode === 'monthly' ? 'yearly' : 'monthly')}
             className="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black text-xs uppercase tracking-widest"
           >
-            Switch to {mode === 'monthly' ? 'Yearly' : 'Monthly'}
+            {t('recap.switch_to', { mode: mode === 'monthly' ? t('recap.yearly') : t('recap.monthly') })}
           </button>
           <button 
             onClick={() => setSelectedDate(mode === 'yearly' ? addYears(selectedDate, 1) : addMonths(selectedDate, 1))}
@@ -305,10 +308,10 @@ Check out your own recap on ClariFi!`;
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="space-y-1">
-          <h2 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
-            {mode === 'yearly' ? 'Yearly' : 'Monthly'} Recap
-          </h2>
-          <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest">
+          <h3 className="text-[29px] font-black text-zinc-900 dark:text-white tracking-tight">
+            {mode === 'yearly' ? t('recap.yearly') : t('recap.monthly')} {t('recap.title')}
+          </h3>
+          <p className="text-zinc-500 text-[13px] font-bold uppercase tracking-widest">
             {recapData.periodLabel}
           </p>
         </div>
@@ -317,19 +320,19 @@ Check out your own recap on ClariFi!`;
           <div className="flex gap-1 bg-zinc-100 dark:bg-white/5 p-1 rounded-xl border border-zinc-200 dark:border-white/10">
             <button 
               onClick={() => setMode('monthly')}
-              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+              className={`px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${
                 mode === 'monthly' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500'
               }`}
             >
-              Monthly
+              {t('recap.monthly')}
             </button>
             <button 
               onClick={() => setMode('yearly')}
-              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+              className={`px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${
                 mode === 'yearly' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500'
               }`}
             >
-              Yearly
+              {t('recap.yearly')}
             </button>
           </div>
           
@@ -342,9 +345,9 @@ Check out your own recap on ClariFi!`;
             </button>
             <button 
               onClick={() => setSelectedDate(new Date())}
-              className="px-4 py-2 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest"
+              className="px-4 py-2 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-white/10 text-[11px] font-black uppercase tracking-widest"
             >
-              Today
+              {t('recap.today')}
             </button>
             <button 
               onClick={() => setSelectedDate(mode === 'yearly' ? addYears(selectedDate, 1) : addMonths(selectedDate, 1))}
@@ -369,7 +372,7 @@ Check out your own recap on ClariFi!`;
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Sparkles size={20} className="text-yellow-300" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em]">{steps[step].title}</span>
+              <span className="text-[12px] font-black uppercase tracking-[0.3em]">{steps[step].title}</span>
             </div>
             <div className="flex gap-1">
               {steps.map((_, i) => (
@@ -401,9 +404,9 @@ Check out your own recap on ClariFi!`;
                   </motion.div>
                   <div className="space-y-2">
                     <h3 className="text-5xl sm:text-7xl font-black tracking-tighter leading-none">
-                      {recapData.periodLabel}<br />Wrapped
+                      {recapData.periodLabel}<br />{t('recap.wrapped')}
                     </h3>
-                    <p className="text-lg font-bold opacity-80">You made {recapData.count} financial moves.</p>
+                    <p className="text-lg font-bold opacity-80">{t('recap.moves_made', { count: recapData.count })}</p>
                   </div>
                 </div>
               )}
@@ -411,18 +414,18 @@ Check out your own recap on ClariFi!`;
               {step === 1 && (
                 <div className="w-full max-w-md space-y-12">
                   <div className="space-y-2">
-                    <p className="text-xs font-black uppercase tracking-[0.2em] opacity-70">Total Outflow</p>
-                    <h3 className="text-6xl sm:text-7xl font-black tracking-tighter">
+                    <p className="text-xs font-black uppercase tracking-[0.2em] opacity-70">{t('recap.total_outflow')}</p>
+                    <h3 className="text-[43px] font-black tracking-tighter">
                       {currencySymbol}{recapData.totalSpent.toLocaleString()}
                     </h3>
                   </div>
                   <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Total Inflow</p>
+                      <p className="text-[11px] font-black uppercase tracking-widest opacity-70">{t('recap.total_inflow')}</p>
                       <p className="text-2xl font-black">{currencySymbol}{recapData.totalIncome.toLocaleString()}</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Net Flow</p>
+                      <p className="text-[11px] font-black uppercase tracking-widest opacity-70">{t('recap.net_flow')}</p>
                       <p className={`text-2xl font-black ${recapData.totalIncome > recapData.totalSpent ? 'text-emerald-300' : 'text-rose-300'}`}>
                         {recapData.totalIncome > recapData.totalSpent ? '+' : ''}{currencySymbol}{(recapData.totalIncome - recapData.totalSpent).toLocaleString()}
                       </p>
@@ -434,17 +437,17 @@ Check out your own recap on ClariFi!`;
               {step === 2 && (
                 <div className="space-y-10 w-full max-w-md">
                   <div className="space-y-4">
-                    <p className="text-xs font-black uppercase tracking-[0.2em] opacity-70">Top Category</p>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] opacity-70">{t('recap.top_category')}</p>
                     <div className="bg-white/10 backdrop-blur-xl p-8 rounded-[40px] border border-white/20 shadow-2xl">
-                      <h3 className="text-5xl font-black tracking-tighter mb-2">{recapData.topCategory?.[0] || 'No Expenses'}</h3>
+                      <h3 className="text-5xl font-black tracking-tighter mb-2">{recapData.topCategory?.[0] || t('common.none')}</h3>
                       <p className="text-2xl font-bold text-white/80">
-                        {recapData.topCategory ? `${currencySymbol}${recapData.topCategory[1].toLocaleString()}` : 'Keep it up!'}
+                        {recapData.topCategory ? `${currencySymbol}${recapData.topCategory[1].toLocaleString()}` : t('common.keep_it_up')}
                       </p>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Biggest Splurge</p>
-                    <p className="text-lg font-bold italic">"{recapData.biggestExpense?.description || 'No splurges yet'}"</p>
+                    <p className="text-[11px] font-black uppercase tracking-widest opacity-70">{t('recap.biggest_splurge')}</p>
+                    <p className="text-lg font-bold italic">"{recapData.biggestExpense?.description || t('common.none')}"</p>
                     <p className="text-2xl font-black">
                       {recapData.biggestExpense ? `${currencySymbol}${recapData.biggestExpense.amount.toLocaleString()}` : '-'}
                     </p>
@@ -454,7 +457,7 @@ Check out your own recap on ClariFi!`;
 
               {step === 3 && (
                 <div className="w-full h-full flex flex-col space-y-8">
-                  <p className="text-xs font-black uppercase tracking-[0.2em] opacity-70">Spending Pulse</p>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] opacity-70">{t('recap.spending_pulse')}</p>
                   <div className="flex-1 min-h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={recapData.chartData}>
@@ -501,7 +504,7 @@ Check out your own recap on ClariFi!`;
                     <Zap size={80} className="fill-current" />
                   </motion.div>
                   <div className="space-y-4">
-                    <p className="text-xs font-black uppercase tracking-[0.2em] opacity-70">You are...</p>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] opacity-70">{t('recap.you_are')}</p>
                     <h3 className="text-5xl sm:text-6xl font-black tracking-tighter leading-none">{recapData.vibe}</h3>
                     <p className="text-xl font-medium max-w-xs mx-auto opacity-90">{recapData.vibeDesc}</p>
                   </div>
@@ -525,7 +528,7 @@ Check out your own recap on ClariFi!`;
                 className="flex items-center gap-2 px-6 py-4 bg-white text-zinc-900 rounded-2xl font-black text-sm hover:scale-105 transition-all shadow-xl"
               >
                 <Camera size={18} />
-                Visual Share
+                {t('recap.visual_share')}
               </button>
               {step === steps.length - 1 ? (
                 <button 
@@ -585,28 +588,28 @@ Check out your own recap on ClariFi!`;
                     <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-md">
                       <Sparkles size={16} className="text-yellow-300" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest">ClariFi Wrapped</span>
+                    <span className="text-[11px] font-black uppercase tracking-widest">ClariFi {t('recap.wrapped')}</span>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-50">{recapData.periodLabel}</span>
+                  <span className="text-[11px] font-black uppercase tracking-widest opacity-50">{recapData.periodLabel}</span>
                 </div>
 
                 <div className="relative z-10 space-y-8">
                   <div className="space-y-2">
-                    <p className="text-xs font-black uppercase tracking-widest opacity-70">My Financial Vibe</p>
+                    <p className="text-xs font-black uppercase tracking-widest opacity-70">{t('recap.you_are')}</p>
                     <h3 className="text-5xl font-black tracking-tighter leading-none">{recapData.vibe}</h3>
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex justify-between items-end border-b border-white/20 pb-2">
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Total Outflow</p>
+                      <p className="text-[11px] font-black uppercase tracking-widest opacity-70">{t('recap.total_outflow')}</p>
                       <p className="text-2xl font-black">{currencySymbol}{recapData.totalSpent.toLocaleString()}</p>
                     </div>
                     <div className="flex justify-between items-end border-b border-white/20 pb-2">
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Top Category</p>
-                      <p className="text-2xl font-black">{recapData.topCategory?.[0] || 'N/A'}</p>
+                      <p className="text-[11px] font-black uppercase tracking-widest opacity-70">{t('recap.top_category')}</p>
+                      <p className="text-2xl font-black">{recapData.topCategory?.[0] || t('common.none')}</p>
                     </div>
                     <div className="flex justify-between items-end border-b border-white/20 pb-2">
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Moves Made</p>
+                      <p className="text-[11px] font-black uppercase tracking-widest opacity-70">{t('recap.moves_made_label')}</p>
                       <p className="text-2xl font-black">{recapData.count}</p>
                     </div>
                   </div>
@@ -616,7 +619,7 @@ Check out your own recap on ClariFi!`;
                   <div className="w-16 h-16 bg-white text-zinc-950 rounded-2xl flex items-center justify-center shadow-2xl">
                     <Zap size={32} className="fill-current" />
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-50">clarifi.app</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.4em] opacity-50">clarifi-gamma.vercel.app</p>
                 </div>
               </div>
 
@@ -627,21 +630,21 @@ Check out your own recap on ClariFi!`;
                     className="flex-1 flex items-center justify-center gap-2 py-4 bg-white/10 text-white rounded-2xl font-black text-sm border border-white/20 hover:bg-white/20 transition-all"
                   >
                     <Download size={18} />
-                    Save PNG
+                    {t('recap.save_png')}
                   </button>
                   <button 
                     onClick={handleShareImage}
                     className="flex-1 flex items-center justify-center gap-2 py-4 bg-white text-zinc-950 rounded-2xl font-black text-sm shadow-xl hover:scale-[1.02] transition-all"
                   >
                     <Share2 size={18} />
-                    Share Image
+                    {t('recap.share_image')}
                   </button>
                 </div>
                 <button 
                   onClick={handleShare}
                   className="w-full flex items-center justify-center gap-2 py-3 text-white/50 hover:text-white transition-all font-bold text-xs uppercase tracking-widest"
                 >
-                  Share as Text instead
+                  {t('recap.share_text_instead')}
                 </button>
               </div>
             </motion.div>
@@ -653,28 +656,28 @@ Check out your own recap on ClariFi!`;
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard 
           icon={<TrendingUp className="text-emerald-500" />}
-          label="Total Income"
+          label={t('recap.total_inflow')}
           value={`${currencySymbol}${recapData.totalIncome.toLocaleString()}`}
         />
         <SummaryCard 
           icon={<TrendingDown className="text-rose-500" />}
-          label="Total Expenses"
+          label={t('recap.total_outflow')}
           value={`${currencySymbol}${recapData.totalSpent.toLocaleString()}`}
         />
         <SummaryCard 
           icon={<Zap className="text-blue-500" />}
-          label="Top Category"
-          value={recapData.topCategory?.[0] || 'N/A'}
+          label={t('recap.top_category')}
+          value={recapData.topCategory?.[0] || t('common.none')}
         />
         <SummaryCard 
           icon={<Trophy className="text-yellow-500" />}
-          label="Period Vibe"
+          label={t('recap.steps.vibe')}
           value={recapData.vibe.split(' ')[recapData.vibe.split(' ').length - 1]}
         />
       </div>
     </div>
   );
-}
+});
 
 function SummaryCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
   return (
@@ -683,7 +686,7 @@ function SummaryCard({ icon, label, value }: { icon: React.ReactNode, label: str
         <div className="w-10 h-10 bg-zinc-50 dark:bg-white/5 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-white/10">
           {icon}
         </div>
-        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{label}</p>
+        <p className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">{label}</p>
       </div>
       <p className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">{value}</p>
     </div>

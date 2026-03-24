@@ -19,59 +19,8 @@ import {
   getDoc,
   limit
 } from 'firebase/firestore';
-import { auth, db } from './firebase';
-import { Transaction, UserProfile, Theme, Budget, AppNotification } from './types';
-
-enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
-}
-
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId: string | undefined;
-    email: string | null | undefined;
-    emailVerified: boolean | undefined;
-    isAnonymous: boolean | undefined;
-    tenantId: string | null | undefined;
-    providerInfo: {
-      providerId: string;
-      displayName: string | null;
-      email: string | null;
-      photoUrl: string | null;
-    }[];
-  }
-}
-
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
-        providerId: provider.providerId,
-        displayName: provider.displayName,
-        email: provider.email,
-        photoUrl: provider.photoURL
-      })) || []
-    },
-    operationType,
-    path
-  }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  // We don't throw here to avoid crashing the whole app, but we log it clearly
-}
+import { auth, db, handleFirestoreError, OperationType } from './firebase';
+import { Transaction, UserProfile, Theme, Budget, AppNotification, FontSize } from './types';
 
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
@@ -94,14 +43,17 @@ import SavingChallenges from './components/SavingChallenges';
 import About from './components/About';
 import Legal from './components/Legal';
 import Support from './components/Support';
-import { LogIn, PieChart, Plus, List, Lightbulb, Sparkles, Wallet, TrendingUp, TrendingDown, Settings, Flame, Target, Camera, Bell, Brain, History, Trophy, Info, ShieldCheck, FileText, Lock, LifeBuoy } from 'lucide-react';
+import CurrencyConverter from './components/CurrencyConverter';
+import { LogIn, PieChart, Plus, List, Lightbulb, Sparkles, Wallet, TrendingUp, TrendingDown, Settings, Flame, Target, Camera, Bell, Brain, History, Trophy, Info, ShieldCheck, FileText, Lock, LifeBuoy, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import React from 'react';
 import { format, differenceInDays } from 'date-fns';
 import { Goal } from './types';
 import { useWindowSize } from './hooks/useWindowSize';
+import { useTranslation } from 'react-i18next';
 
 export default function App() {
+  const { t, i18n } = useTranslation();
   const { width } = useWindowSize();
   const isMobile = width < 768;
   const [user, setUser] = useState<User | null>(null);
@@ -118,6 +70,7 @@ export default function App() {
   const [showStreakPrompt, setShowStreakPrompt] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showCurrencyConverter, setShowCurrencyConverter] = useState(false);
   const [scanData, setScanData] = useState<{ amount: number; category: string; note: string } | null>(null);
 
   useEffect(() => {
@@ -187,14 +140,12 @@ export default function App() {
                 createdAt: serverTimestamp()
               }, { merge: true });
             } catch (error) {
-              console.error("Profile Creation Error:", error);
-              handleFirestoreError(error, OperationType.WRITE, `users/${currentUser.uid}`);
+                handleFirestoreError(error, OperationType.WRITE, `users/${currentUser.uid}`);
             }
           }
           setLoading(false);
         }, (error) => {
-          console.error("Profile Snapshot Error:", error);
-          handleFirestoreError(error, OperationType.GET, `users/${currentUser.uid}`);
+            handleFirestoreError(error, OperationType.GET, `users/${currentUser.uid}`);
           setLoading(false);
         });
 
@@ -214,8 +165,7 @@ export default function App() {
           })) as Transaction[];
           setTransactions(transactionData);
         }, (error) => {
-          console.error("Transactions Snapshot Error:", error);
-          handleFirestoreError(error, OperationType.LIST, 'expenses');
+            handleFirestoreError(error, OperationType.LIST, 'expenses');
         });
 
         // Listen to notifications
@@ -234,8 +184,7 @@ export default function App() {
           })) as AppNotification[];
           setNotifications(notifData);
         }, (error) => {
-          console.error("Notifications Snapshot Error:", error);
-          handleFirestoreError(error, OperationType.LIST, 'notifications');
+            handleFirestoreError(error, OperationType.LIST, 'notifications');
         });
 
       } else {
@@ -253,6 +202,30 @@ export default function App() {
       if (unsubNotifications) unsubNotifications();
     };
   }, []);
+
+  // Font Size Management
+  useEffect(() => {
+    const applyFontSize = (size: FontSize) => {
+      const root = window.document.documentElement;
+      root.classList.remove('text-small', 'text-medium', 'text-large');
+      root.classList.add(`text-${size}`);
+      
+      // Also set the base font size for rem scaling
+      if (size === 'small') {
+        root.style.fontSize = '14px';
+      } else if (size === 'large') {
+        root.style.fontSize = '18px';
+      } else {
+        root.style.fontSize = '16px';
+      }
+    };
+
+    if (profile?.fontSize) {
+      applyFontSize(profile.fontSize);
+    } else {
+      applyFontSize('medium');
+    }
+  }, [profile?.fontSize]);
 
   // Theme Management
   useEffect(() => {
@@ -286,6 +259,13 @@ export default function App() {
     }
   }, [profile?.theme]);
 
+  // Language Management
+  useEffect(() => {
+    if (profile?.language) {
+      i18n.changeLanguage(profile.language);
+    }
+  }, [profile?.language, i18n]);
+
   const handleCurrencyComplete = async (country: string, currency: { code: string; symbol: string; name: string }) => {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
@@ -313,7 +293,7 @@ export default function App() {
       });
       setShowAddBudget(false);
     } catch (error) {
-      console.error("Error adding budget:", error);
+      handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
     }
   };
 
@@ -333,13 +313,13 @@ export default function App() {
       });
       setShowAddGoal(false);
     } catch (error) {
-      console.error("Error adding goal:", error);
+      handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
     }
   };
 
   // Scroll Lock for Modals
   useEffect(() => {
-    const isModalOpen = showAddForm || showAddBudget || showAddGoal || showAuthModal || showScanner || showNotifications || showStreakPrompt;
+    const isModalOpen = showAddForm || showAddBudget || showAddGoal || showAuthModal || showScanner || showNotifications || showStreakPrompt || showCurrencyConverter;
     if (isModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -439,16 +419,16 @@ export default function App() {
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-sm font-bold uppercase tracking-[0.2em] backdrop-blur-md"
               >
                 <Sparkles size={14} className="animate-pulse" />
-                Intelligent Wealth Management
+                {t('app.intelligent_wealth')}
               </motion.div>
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter text-white leading-[0.9] lg:leading-[0.85]">
                 Clarity in <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-br from-emerald-400 via-emerald-500 to-blue-600">
-                  Every Expense.
+                  {t('app.clarity_every_expense')}
                 </span>
               </h1>
               <p className="text-zinc-400 text-base sm:text-lg lg:text-xl max-w-lg mx-auto lg:mx-0 leading-relaxed font-light px-4 sm:px-0">
-                Experience the future of personal accounting with ClariFi. We turn complex data into simple, beautiful insights that empower your financial freedom.
+                {t('app.experience_future')}
               </p>
             </div>
             
@@ -464,7 +444,7 @@ export default function App() {
               >
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
                 <LogIn size={20} />
-                Start Journey
+                {t('app.start_journey')}
               </button>
               
               <div className="flex items-center gap-3">
@@ -476,8 +456,8 @@ export default function App() {
                   ))}
                 </div>
                 <div className="text-left">
-                  <p className="text-white font-bold">Join 2,400+ users</p>
-                  <p className="text-zinc-500 text-xs">Managing $4M+ monthly</p>
+                  <p className="text-white font-bold">{t('app.join_users', { count: '2,400' })}</p>
+                  <p className="text-zinc-500 text-xs">{t('app.managing_monthly', { amount: '$4M' })}</p>
                 </div>
               </div>
             </motion.div>
@@ -602,6 +582,7 @@ export default function App() {
       user={user} 
       profile={profile}
       onLogout={handleLogout} 
+      onConverterClick={() => setShowCurrencyConverter(true)}
       onSettingsClick={() => {
         setActiveTab('settings');
         setSettingsTab('general');
@@ -626,37 +607,37 @@ export default function App() {
               active={activeTab === 'dashboard'} 
               onClick={() => setActiveTab('dashboard')}
               icon={<PieChart size={18} />}
-              label="Overview"
+              label={t('nav.overview')}
             />
             <TabButton 
               active={activeTab === 'expenses'} 
               onClick={() => setActiveTab('expenses')}
               icon={<List size={18} />}
-              label="Transactions"
+              label={t('nav.transactions')}
             />
             <TabButton 
               active={activeTab === 'insights'} 
               onClick={() => setActiveTab('insights')} 
               icon={<Lightbulb size={18} />}
-              label="Insights"
+              label={t('nav.insights')}
             />
             <TabButton 
               active={activeTab === 'budgets'} 
               onClick={() => setActiveTab('budgets')} 
               icon={<Target size={18} />}
-              label="Budgets"
+              label={t('nav.budgets')}
             />
             <TabButton 
               active={activeTab === 'goals'} 
               onClick={() => setActiveTab('goals')} 
               icon={<TrendingUp size={18} />}
-              label="Goals"
+              label={t('nav.goals')}
             />
             <TabButton 
               active={activeTab === 'challenges'} 
               onClick={() => setActiveTab('challenges')} 
               icon={<Trophy size={18} />}
-              label="Quests"
+              label={t('nav.quests')}
             />
             {profile?.streak && (
               <div className="flex items-center gap-2 px-4 py-3 text-orange-500 font-black text-sm uppercase tracking-widest border-l border-zinc-200 dark:border-white/10 ml-2">
@@ -689,23 +670,23 @@ export default function App() {
               <div className="space-y-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="space-y-1">
-                    <h2 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">Transactions</h2>
-                    <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest">History & Management</p>
+                    <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">{t('nav.transactions')}</h3>
+                    <p className="text-zinc-500 text-[13px] font-bold uppercase tracking-widest">{t('transactions.history')}</p>
                   </div>
                   <div className="flex gap-3 w-full sm:w-auto">
                     <button 
                       onClick={() => setShowScanner(true)}
                       className="flex-1 sm:flex-none px-6 py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl hover:scale-105 transition-all"
                     >
-                      <Camera size={18} />
-                      Scan Receipt
+                      <Camera size={18} className="text-[#747482]" />
+                      {t('app.scan_receipt')}
                     </button>
                     <button 
                       onClick={() => setShowAddForm(true)}
                       className="flex-1 sm:flex-none px-6 py-4 bg-emerald-500 text-zinc-950 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all"
                     >
                       <Plus size={18} />
-                      Add Entry
+                      {t('app.add_entry')}
                     </button>
                   </div>
                 </div>
@@ -771,6 +752,35 @@ export default function App() {
 
     {/* Modals & Overlays - Moved outside Layout to fix stacking context issues */}
     <AnimatePresence>
+      {showCurrencyConverter && (
+        <div key="currency-converter-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCurrencyConverter(false)}
+            className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm cursor-pointer"
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="relative z-10 w-full max-w-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="absolute top-6 right-6 z-20">
+              <button 
+                onClick={() => setShowCurrencyConverter(false)}
+                className="p-2 rounded-full bg-zinc-100 dark:bg-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <CurrencyConverter />
+          </motion.div>
+        </div>
+      )}
+
       {showAddBudget && (
         <div key="add-budget-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
           <motion.div 
@@ -791,6 +801,7 @@ export default function App() {
               onClose={() => setShowAddBudget(false)}
               onAdd={handleAddBudget}
               currencySymbol={currencySymbol}
+              customCategories={profile?.customCategories || []}
             />
           </motion.div>
         </div>
@@ -824,6 +835,7 @@ export default function App() {
               budgets={profile?.budgets || []}
               transactions={transactions}
               initialData={scanData}
+              customCategories={profile?.customCategories || []}
             />
           </motion.div>
         </div>
@@ -849,6 +861,7 @@ export default function App() {
               onClose={() => setShowAddGoal(false)}
               onAdd={handleAddGoal}
               currencySymbol={currencySymbol}
+              customCategories={profile?.customCategories || []}
             />
           </motion.div>
         </div>
@@ -906,7 +919,7 @@ function TabButton({ active, onClick, icon, label }: { active: boolean, onClick:
   return (
     <button 
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+      className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
         active 
           ? 'bg-emerald-500 text-zinc-950 shadow-lg shadow-emerald-500/20' 
           : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5'

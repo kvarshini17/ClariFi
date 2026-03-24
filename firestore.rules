@@ -15,13 +15,14 @@ service cloud.firestore {
     //   - createdAt: timestamp (required)
     //   - budgets: list (optional)
     //   - goals: list (optional)
+    //   - customCategories: list (optional)
     //
     // Collection: expenses
     // Document ID: {expenseId}
     // Fields:
     //   - uid: string (required) - Owner ID
     //   - amount: number (required) - Positive amount
-    //   - category: string (required) - Enum: Food, Travel, Bills, Shopping, Health, Entertainment, Others, Income
+    //   - category: string (required) - Category name (supports custom)
     //   - type: string (required) - Enum: expense, income
     //   - date: timestamp (required)
     //   - note: string (optional) - Max 500 chars
@@ -54,6 +55,17 @@ service cloud.firestore {
     //   - icon: string (required)
     //   - createdAt: string (required) - ISO date
     //
+    // Collection: support_messages
+    // Document ID: {messageId}
+    // Fields:
+    //   - uid: string (required) - Submitter ID
+    //   - email: string (required) - Submitter email
+    //   - subject: string (required) - Max 100 chars
+    //   - message: string (required) - Max 2000 chars
+    //   - reply: string (optional) - Admin response
+    //   - status: string (required) - Enum: pending, replied, closed
+    //   - createdAt: timestamp (required)
+    //
     // ===============================================================
 
     // ===============================================================
@@ -73,8 +85,11 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-          (request.auth.token.email == "chishiyazzcode@gmail.com" && request.auth.token.email_verified == true));
+        (
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+          request.auth.token.email == "chishiyazzcode@gmail.com"
+        );
     }
 
     function isValidEmail(email) {
@@ -91,6 +106,8 @@ service cloud.firestore {
              (!('country' in data) || (data.country is string && data.country.size() <= 100)) &&
              (!('phoneNumber' in data) || (data.phoneNumber is string && data.phoneNumber.size() <= 20)) &&
              (!('theme' in data) || (data.theme in ['light', 'dark', 'system'])) &&
+             (!('fontSize' in data) || (data.fontSize in ['small', 'medium', 'large'])) &&
+             (!('language' in data) || (data.language is string && data.language.size() >= 2 && data.language.size() <= 10)) &&
              (!('streak' in data) || (
                data.streak is map &&
                data.streak.keys().hasAll(['count', 'lastLoginDate']) &&
@@ -113,16 +130,19 @@ service cloud.firestore {
                data.goals is list &&
                data.goals.size() <= 50
              )) &&
-             data.keys().hasOnly(['uid', 'email', 'displayName', 'photoURL', 'country', 'phoneNumber', 'theme', 'streak', 'currency', 'budgets', 'goals', 'createdAt']);
+             (!('customCategories' in data) || (
+               data.customCategories is list &&
+               data.customCategories.size() <= 100
+             )) &&
+             data.keys().hasOnly(['uid', 'email', 'displayName', 'photoURL', 'country', 'phoneNumber', 'theme', 'fontSize', 'language', 'streak', 'currency', 'budgets', 'goals', 'customCategories', 'createdAt']);
     }
 
     function isValidTransaction(data) {
-      let categories = ['Food', 'Travel', 'Bills', 'Shopping', 'Health', 'Entertainment', 'Others', 'Income'];
       let types = ['expense', 'income'];
       return data.keys().hasAll(['uid', 'amount', 'category', 'type', 'date', 'createdAt']) &&
              data.uid == request.auth.uid &&
              data.amount is number && data.amount > 0 && data.amount < 1000000000 &&
-             data.category in categories &&
+             data.category is string && data.category.size() > 0 && data.category.size() <= 100 &&
              data.type in types &&
              data.date is timestamp &&
              (!('note' in data) || (data.note is string && data.note.size() <= 500)) &&
@@ -143,7 +163,6 @@ service cloud.firestore {
 
     function isValidChallenge(data) {
       let statuses = ['active', 'completed', 'failed'];
-      let categories = ['Food', 'Travel', 'Bills', 'Shopping', 'Health', 'Entertainment', 'Others', 'Income'];
       return data.keys().hasAll(['uid', 'title', 'targetAmount', 'currentAmount', 'duration', 'startDate', 'category', 'status', 'reward', 'icon', 'createdAt']) &&
              data.uid == request.auth.uid &&
              data.title is string && data.title.size() > 0 && data.title.size() <= 100 &&
@@ -152,11 +171,24 @@ service cloud.firestore {
              data.currentAmount is number && data.currentAmount >= 0 &&
              data.duration is number && data.duration > 0 &&
              data.startDate is string &&
-             data.category in categories &&
+             data.category is string && data.category.size() > 0 && data.category.size() <= 100 &&
              data.status in statuses &&
              data.reward is number &&
              data.icon is string &&
              data.createdAt is timestamp;
+    }
+
+    function isValidSupportMessage(data) {
+      let statuses = ['pending', 'replied', 'closed'];
+      return data.keys().hasAll(['uid', 'email', 'subject', 'message', 'status', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             isValidEmail(data.email) &&
+             data.subject is string && data.subject.size() > 0 && data.subject.size() <= 100 &&
+             data.message is string && data.message.size() > 0 && data.message.size() <= 2000 &&
+             (!('reply' in data) || (data.reply is string && data.reply.size() <= 2000)) &&
+             data.status in statuses &&
+             data.createdAt is timestamp &&
+             data.keys().hasOnly(['uid', 'email', 'subject', 'message', 'reply', 'status', 'createdAt']);
     }
 
     // ===============================================================
@@ -196,6 +228,13 @@ service cloud.firestore {
                     request.resource.data.uid == resource.data.uid &&
                     request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isDocOwner() || isAdmin();
+    }
+
+    match /support_messages/{messageId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidSupportMessage(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
   }
 }

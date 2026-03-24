@@ -5,7 +5,7 @@ import {
   GoogleAuthProvider, 
   signInWithPopup 
 } from 'firebase/auth';
-import { auth, db } from '../firebase';
+import { auth, db, handleFirestoreError, OperationType } from '../firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { X, Mail, Lock, LogIn, UserPlus, Chrome, AlertCircle, Globe, ChevronRight, ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -47,14 +47,18 @@ export default function AuthModal({ onClose }: AuthModalProps) {
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         // Create profile immediately with selected currency and name
-        await setDoc(doc(db, 'users', userCredential.user.uid), {
-          uid: userCredential.user.uid,
-          email: userCredential.user.email,
-          displayName: name,
-          country: selectedCountry.name,
-          currency: selectedCountry.currency,
-          createdAt: serverTimestamp()
-        }, { merge: true });
+        try {
+          await setDoc(doc(db, 'users', userCredential.user.uid), {
+            uid: userCredential.user.uid,
+            email: userCredential.user.email,
+            displayName: name,
+            country: selectedCountry.name,
+            currency: selectedCountry.currency,
+            createdAt: serverTimestamp()
+          }, { merge: true });
+        } catch (fsErr) {
+          handleFirestoreError(fsErr, OperationType.WRITE, `users/${userCredential.user.uid}`);
+        }
       }
       onClose();
     } catch (err: any) {
@@ -100,9 +104,9 @@ export default function AuthModal({ onClose }: AuthModalProps) {
     <div className="p-6 sm:p-8">
       <div className="flex justify-between items-center mb-8">
         <div className="space-y-1">
-          <h2 className="text-2xl font-black text-white tracking-tight">
+          <h3 className="text-2xl font-black text-white tracking-tight">
             {isLogin ? 'Welcome Back' : (step === 1 ? 'Create Account' : 'Final Step')}
-          </h2>
+          </h3>
           <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">
             {isLogin ? 'Access your dashboard' : (step === 1 ? 'Start your journey today' : 'Set your local currency')}
           </p>
@@ -198,7 +202,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
-                    className="flex items-center gap-2 text-red-400 text-[10px] font-bold bg-red-400/5 p-3 rounded-lg border border-red-400/10"
+                    className="flex items-center gap-2 text-red-400 text-[11px] font-bold bg-red-400/5 p-3 rounded-lg border border-red-400/10"
                   >
                     <AlertCircle size={12} />
                     {error}
@@ -236,7 +240,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                   >
                     <div className="text-left">
                       <p className="font-bold">{country.name}</p>
-                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">{country.currency.code} ({country.currency.symbol})</p>
+                      <p className="text-[11px] font-bold uppercase tracking-widest opacity-50">{country.currency.code} ({country.currency.symbol})</p>
                     </div>
                     {selectedCountry.code === country.code && <div className="w-2 h-2 bg-emerald-500 rounded-full" />}
                   </button>
@@ -277,7 +281,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
           </button>
 
           <div className="pt-4 border-t border-white/5">
-            <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest leading-relaxed">
+            <p className="text-[11px] text-zinc-600 font-bold uppercase tracking-widest leading-relaxed">
               By continuing, you agree to ClariFi's<br />
               <span className="text-emerald-500/80">Terms of Service</span> and <span className="text-emerald-500/80">Privacy Policy</span>
             </p>

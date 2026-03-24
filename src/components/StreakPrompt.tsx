@@ -91,12 +91,12 @@ export default function StreakPrompt({ streakCount, onClose, onAddTransaction }:
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <h2 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter leading-tight transition-colors">
+            <h3 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter leading-tight transition-colors">
               You're on <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
                 Fire!
               </span>
-            </h2>
+            </h3>
           </motion.div>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -128,7 +128,7 @@ export default function StreakPrompt({ streakCount, onClose, onAddTransaction }:
           </button>
         </div>
 
-        <div className="flex items-center justify-center gap-2 text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]">
+        <div className="flex items-center justify-center gap-2 text-zinc-600 text-[11px] font-black uppercase tracking-[0.3em]">
           <AlertCircle size={12} />
           Consistency is the key to wealth
         </div>
