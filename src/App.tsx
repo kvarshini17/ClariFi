@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   signInWithPopup, 
   signOut, 
@@ -72,6 +72,59 @@ export default function App() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showCurrencyConverter, setShowCurrencyConverter] = useState(false);
   const [scanData, setScanData] = useState<{ amount: number; category: string; note: string } | null>(null);
+
+  // --- History Navigation Logic Start ---
+  
+  // Close any open modals
+  const closeAllModals = useCallback(() => {
+    let handled = false;
+    if (showAddForm) { setShowAddForm(false); setScanData(null); handled = true; }
+    if (showAddBudget) { setShowAddBudget(false); handled = true; }
+    if (showAddGoal) { setShowAddGoal(false); handled = true; }
+    if (showAuthModal) { setShowAuthModal(false); handled = true; }
+    if (showScanner) { setShowScanner(false); handled = true; }
+    if (showNotifications) { setShowNotifications(false); handled = true; }
+    if (showStreakPrompt) { setShowStreakPrompt(false); handled = true; }
+    if (showCurrencyConverter) { setShowCurrencyConverter(false); handled = true; }
+    return handled;
+  }, [showAddForm, showAddBudget, showAddGoal, showAuthModal, showScanner, showNotifications, showStreakPrompt, showCurrencyConverter]);
+
+  // Handle hardware/browser back button
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      const modalClosed = closeAllModals();
+      
+      if (!modalClosed && activeTab !== 'dashboard') {
+        setActiveTab('dashboard');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    
+    // Initial state
+    if (!window.history.state) {
+      window.history.replaceState({ type: 'base' }, '');
+    }
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [closeAllModals, activeTab]);
+
+  // Push to history when state changes
+  useEffect(() => {
+    const isModalOpen = showAddForm || showAddBudget || showAddGoal || showAuthModal || showScanner || showNotifications || showStreakPrompt || showCurrencyConverter;
+    
+    if (isModalOpen) {
+      window.history.pushState({ type: 'modal' }, '');
+    }
+  }, [showAddForm, showAddBudget, showAddGoal, showAuthModal, showScanner, showNotifications, showStreakPrompt, showCurrencyConverter]);
+
+  useEffect(() => {
+    if (activeTab !== 'dashboard') {
+      window.history.pushState({ type: 'tab', tab: activeTab }, '');
+    }
+  }, [activeTab]);
+
+  // --- History Navigation Logic End ---
 
   useEffect(() => {
     let unsubProfile: (() => void) | null = null;
@@ -730,20 +783,20 @@ export default function App() {
             )}
             {activeTab === 'about' && (
               <About 
-                onBack={() => setActiveTab('dashboard')} 
+                onBack={() => window.history.back()} 
               />
             )}
             {activeTab === 'terms' && (
-              <Legal type="terms" onBack={() => setActiveTab('dashboard')} />
+              <Legal type="terms" onBack={() => window.history.back()} />
             )}
             {activeTab === 'policies' && (
-              <Legal type="policies" onBack={() => setActiveTab('dashboard')} />
+              <Legal type="policies" onBack={() => window.history.back()} />
             )}
             {activeTab === 'security' && (
-              <Legal type="security" onBack={() => setActiveTab('dashboard')} />
+              <Legal type="security" onBack={() => window.history.back()} />
             )}
             {activeTab === 'support' && (
-              <Support onBack={() => setActiveTab('dashboard')} />
+              <Support onBack={() => window.history.back()} />
             )}
           </motion.div>
         </AnimatePresence>
@@ -758,7 +811,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setShowCurrencyConverter(false)}
+            onClick={() => window.history.back()}
             className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm cursor-pointer"
           />
           <motion.div 
@@ -770,7 +823,7 @@ export default function App() {
           >
             <div className="absolute top-6 right-6 z-20">
               <button 
-                onClick={() => setShowCurrencyConverter(false)}
+                onClick={() => window.history.back()}
                 className="p-2 rounded-full bg-zinc-100 dark:bg-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
               >
                 <X size={20} />
@@ -787,7 +840,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setShowAddBudget(false)}
+            onClick={() => window.history.back()}
             className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm cursor-pointer"
           />
           <motion.div 
@@ -798,7 +851,7 @@ export default function App() {
             onClick={(e) => e.stopPropagation()}
           >
             <BudgetForm 
-              onClose={() => setShowAddBudget(false)}
+              onClose={() => window.history.back()}
               onAdd={handleAddBudget}
               currencySymbol={currencySymbol}
               customCategories={profile?.customCategories || []}
@@ -813,10 +866,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => {
-              setShowAddForm(false);
-              setScanData(null);
-            }}
+            onClick={() => window.history.back()}
             className="absolute inset-0 bg-zinc-950/80 sm:bg-zinc-950/60 dark:bg-zinc-950/95 backdrop-blur-md sm:backdrop-blur-md"
           />
           <motion.div 
@@ -826,10 +876,7 @@ export default function App() {
             className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
           >
             <TransactionForm 
-              onClose={() => {
-                setShowAddForm(false);
-                setScanData(null);
-              }}
+              onClose={() => window.history.back()}
               uid={user.uid}
               currencySymbol={currencySymbol}
               budgets={profile?.budgets || []}
@@ -847,7 +894,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setShowAddGoal(false)}
+            onClick={() => window.history.back()}
             className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm cursor-pointer"
           />
           <motion.div 
@@ -858,7 +905,7 @@ export default function App() {
             onClick={(e) => e.stopPropagation()}
           >
             <GoalForm 
-              onClose={() => setShowAddGoal(false)}
+              onClose={() => window.history.back()}
               onAdd={handleAddGoal}
               currencySymbol={currencySymbol}
               customCategories={profile?.customCategories || []}
@@ -871,17 +918,17 @@ export default function App() {
         <ReceiptScanner 
           onScanComplete={(data) => {
             setScanData(data);
-            setShowScanner(false);
-            setShowAddForm(true);
+            window.history.back(); // Closes scanner
+            setShowAddForm(true); // Opens form
           }}
-          onClose={() => setShowScanner(false)}
+          onClose={() => window.history.back()}
         />
       )}
       {showNotifications && (
         <NotificationCenter 
           uid={user?.uid || ''}
           notifications={notifications}
-          onClose={() => setShowNotifications(false)}
+          onClose={() => window.history.back()}
         />
       )}
       {showStreakPrompt && profile?.streak && (
@@ -890,7 +937,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setShowStreakPrompt(false)}
+            onClick={() => window.history.back()}
             className="absolute inset-0 bg-zinc-950/60 dark:bg-zinc-950/90 backdrop-blur-xl"
           />
           <motion.div 
@@ -901,9 +948,9 @@ export default function App() {
           >
             <StreakPrompt 
               streakCount={profile.streak.count}
-              onClose={() => setShowStreakPrompt(false)}
+              onClose={() => window.history.back()}
               onAddTransaction={() => {
-                setShowStreakPrompt(false);
+                window.history.back();
                 setShowAddForm(true);
               }}
             />

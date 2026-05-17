@@ -2,6 +2,7 @@ import React from 'react';
 import { Info, Sparkles, Shield, Zap, Target, Heart, ChevronLeft, Brain, Star, Globe, ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
+import LogoShowcase from './LogoShowcase';
 
 interface AboutProps {
   onBack: () => void;
@@ -132,6 +133,15 @@ export default function About({ onBack }: AboutProps) {
           </p>
         </motion.div>
       </div>
+
+      {/* Logo Showcase Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.45 }}
+      >
+        <LogoShowcase />
+      </motion.div>
 
       {/* Values & Passion Split Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

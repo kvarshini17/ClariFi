@@ -232,5 +232,13 @@
     "thank_you": "Thank you for choosing ClariFi",
     "version": "Version 2.5.0",
     "back_to_dashboard": "Back to Dashboard"
+  },
+  "logo": {
+    "title": "ClariFi Logo Design",
+    "generate": "Generate Logo",
+    "generating": "Designing...",
+    "desc": "Our 1024x1024px official brand identity, generated with AI.",
+    "download": "Download Logo",
+    "placeholder": "Click to generate the official ClariFi logo"
   }
 }

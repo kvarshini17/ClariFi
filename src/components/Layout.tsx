@@ -98,7 +98,7 @@ export default function Layout({
               <Wallet className="text-zinc-950" size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="font-black text-lg tracking-tighter text-zinc-900 dark:text-white">ClariFi</span>
+              <span className="font-grotesque font-black text-lg tracking-tighter text-zinc-900 dark:text-white">ClariFi</span>
               <div className="flex items-center gap-1 text-xs font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-widest">
                 <Sparkles size={10} /> Pro
               </div>
