@@ -3,11 +3,12 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   GoogleAuthProvider, 
-  signInWithPopup 
+  signInWithPopup,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth, db, handleFirestoreError, OperationType } from '../firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { X, Mail, Lock, LogIn, UserPlus, Chrome, AlertCircle, Globe, ChevronRight, ChevronLeft, Eye, EyeOff } from 'lucide-react';
+import { X, Mail, Lock, LogIn, UserPlus, Chrome, AlertCircle, Globe, ChevronRight, ChevronLeft, Eye, EyeOff, Send, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { COUNTRIES } from '../constants';
 
@@ -17,6 +18,7 @@ interface AuthModalProps {
 
 export default function AuthModal({ onClose }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [step, setStep] = useState(1); // 1: Credentials, 2: Currency (for signup)
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,11 +26,54 @@ export default function AuthModal({ onClose }: AuthModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+
+  React.useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (resendTimer > 0) return;
+    
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setSuccess("Reset link sent! 📧 We've dispatched a secure link from clarifi.support@gmail.com. Please check your Inbox (and Spam/Promotions) to reset your password.");
+      setResendTimer(60); // 1 minute cooldown
+    } catch (err: any) {
+      console.error("Reset Error:", err);
+      let message = "Failed to send reset email.";
+      if (err.code === 'auth/user-not-found') {
+        message = "No account exists with this email address.";
+      } else if (err.code === 'auth/invalid-email') {
+        message = "Please enter a valid email format.";
+      } else if (err.code === 'auth/too-many-requests') {
+        message = "Too many requests. Please wait a minute and try again.";
+      } else {
+        message = `Error: ${err.message}`;
+      }
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     
     if (!isLogin && step === 1) {
       if (!name && !isLogin) {
@@ -105,10 +150,10 @@ export default function AuthModal({ onClose }: AuthModalProps) {
       <div className="flex justify-between items-center mb-8">
         <div className="space-y-1">
           <h3 className="text-2xl font-black text-white tracking-tight">
-            {isLogin ? 'Welcome Back' : (step === 1 ? 'Create Account' : 'Final Step')}
+            {isForgotPassword ? 'Reset Password' : (isLogin ? 'Welcome Back' : (step === 1 ? 'Create Account' : 'Final Step'))}
           </h3>
           <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">
-            {isLogin ? 'Access your dashboard' : (step === 1 ? 'Start your journey today' : 'Set your local currency')}
+            {isForgotPassword ? 'Send a recovery link to your email' : (isLogin ? 'Access your dashboard' : (step === 1 ? 'Start your journey today' : 'Set your local currency'))}
           </p>
         </div>
         <button 
@@ -120,7 +165,78 @@ export default function AuthModal({ onClose }: AuthModalProps) {
       </div>
 
       <div className="space-y-6">
-        {isLogin || step === 1 ? (
+        {isForgotPassword ? (
+          <form onSubmit={handleForgotPassword} className="space-y-6">
+            <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-4">
+              <p className="text-[11px] text-emerald-400 font-bold leading-relaxed">
+                <Sparkles size={12} className="inline mr-1" />
+                Wait! Firebase will send you a **Secure Link**, not a code. Check your **Spam folder** if you don't see it within 60 seconds.
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                <Mail size={12} /> Email Address
+              </label>
+              <input 
+                type="email" 
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-white placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
+              />
+            </div>
+
+            <AnimatePresence mode="wait">
+              {error && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="flex items-center gap-2 text-rose-400 text-[11px] font-bold bg-rose-400/5 p-4 rounded-xl border border-rose-400/10"
+                >
+                  <AlertCircle size={14} />
+                  {error}
+                </motion.div>
+              )}
+              {success && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="flex items-center gap-2 text-emerald-400 text-[11px] font-bold bg-emerald-400/5 p-4 rounded-xl border border-emerald-400/10"
+                >
+                  <Send size={14} />
+                  {success}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="space-y-3">
+              <button 
+                type="submit"
+                disabled={loading || resendTimer > 0}
+                className="w-full py-5 bg-emerald-500 text-zinc-950 rounded-xl font-black text-lg hover:scale-[1.01] active:scale-95 transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-50 disabled:hover:scale-100"
+              >
+                {loading ? 'Sending...' : (resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Send Reset Link')}
+              </button>
+              
+              <button 
+                type="button"
+                onClick={() => {
+                  setIsForgotPassword(false);
+                  setError('');
+                  setSuccess('');
+                  setResendTimer(0);
+                }}
+                className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-1"
+              >
+                <ChevronLeft size={18} /> Back to Login
+              </button>
+            </div>
+          </form>
+        ) : isLogin || step === 1 ? (
           <>
             {/* Google Login Button - Only show on step 1 */}
             <button 
@@ -173,9 +289,24 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <Lock size={12} /> Password
-                  </label>
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Lock size={12} /> Password
+                    </label>
+                    {isLogin && (
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          setIsForgotPassword(true);
+                          setError('');
+                          setSuccess('');
+                        }}
+                        className="text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:text-emerald-400 transition-colors"
+                      >
+                        Forgot Password?
+                      </button>
+                    )}
+                  </div>
                   <div className="relative">
                     <input 
                       type={showPassword ? "text" : "password"} 
@@ -202,7 +333,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
-                    className="flex items-center gap-2 text-red-400 text-[11px] font-bold bg-red-400/5 p-3 rounded-lg border border-red-400/10"
+                    className="flex items-center gap-2 text-rose-400 text-[11px] font-bold bg-rose-400/5 p-3 rounded-lg border border-rose-400/10"
                   >
                     <AlertCircle size={12} />
                     {error}
