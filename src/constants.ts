@@ -1,4 +1,4 @@
-export const COUNTRIES = [
+﻿export const COUNTRIES = [
   { name: 'United States', code: 'US', currency: { code: 'USD', symbol: '$', name: 'US Dollar' } },
   { name: 'United Kingdom', code: 'GB', currency: { code: 'GBP', symbol: '£', name: 'British Pound' } },
   { name: 'European Union', code: 'EU', currency: { code: 'EUR', symbol: '€', name: 'Euro' } },

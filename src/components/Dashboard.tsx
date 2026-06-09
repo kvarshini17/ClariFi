@@ -132,14 +132,14 @@ export default function Dashboard({
       {/* Greeting */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="space-y-1">
-          <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">{t('dashboard.welcome')} {userName || 'Friend'}</h3>
-          <p className="text-zinc-600 dark:text-zinc-400 text-[12px] font-bold uppercase tracking-widest">{t('dashboard.overview')}</p>
+          <h3 className="text-3xl font-black text-primary tracking-tight">{t('dashboard.welcome')} {userName || 'Friend'}</h3>
+          <p className="text-secondary text-[12px] font-bold uppercase tracking-widest">{t('dashboard.overview')}</p>
         </div>
         {onAddTransaction && (
           <button 
             onClick={onAddTransaction}
             style={{ height: '47.6px', width: '325.775px' }}
-            className="w-full sm:w-auto px-6 py-4 bg-emerald-500 text-zinc-950 rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-xl hover:scale-105 transition-all"
+            className="w-full sm:w-auto px-6 py-4 bg-accent text-zinc-950 rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-xl hover:scale-105 transition-all"
           >
             <Plus size={17} className="text-[#626268]" />
             {t('dashboard.newEntry')}
@@ -155,62 +155,62 @@ export default function Dashboard({
       {/* Summary Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-3 px-2">
-          <div className="w-1.5 h-8 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+          <div className="w-1.5 h-8 bg-accent rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
           <div className="space-y-0.5">
-            <h3 className="text-[22px] font-black text-zinc-900 dark:text-white tracking-tight">{t('dashboard.summary')}</h3>
-            <p className="text-[12px] font-bold text-[#ceceda] uppercase tracking-widest">{t('dashboard.realtime')}</p>
+            <h3 className="text-[22px] font-black text-primary tracking-tight">{t('dashboard.summary')}</h3>
+            <p className="text-[12px] font-bold text-zinc-500 dark:text-secondary uppercase tracking-widest">{t('dashboard.realtime')}</p>
           </div>
         </div>
         <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-2xl border border-zinc-200 dark:border-white/10 shadow-2xl relative overflow-hidden group transition-colors">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 blur-[40px] rounded-full -mr-12 -mt-12 group-hover:bg-emerald-500/20 transition-colors" />
-            <p className="text-[#ceceda] text-[13px] font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">{t('dashboard.totalBalance')}</p>
+          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-2xl border border-border shadow-2xl relative overflow-hidden group transition-colors">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-accent/10 blur-[40px] rounded-full -mr-12 -mt-12 group-hover:bg-accent/20 transition-colors" />
+            <p className="text-zinc-500 dark:text-secondary text-[13px] font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">{t('dashboard.totalBalance')}</p>
             <div className="flex items-end gap-2 relative z-10">
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-zinc-900 dark:text-white tracking-tighter">{currencySymbol}{(stats.currentIncome - stats.currentExpense).toLocaleString()}</h3>
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-primary tracking-tighter">{currencySymbol}{(stats.currentIncome - stats.currentExpense).toLocaleString()}</h3>
             </div>
-            <p className="text-[#ceceda] text-xs font-bold uppercase tracking-widest mt-2 sm:mt-3 flex items-center gap-1">
+            <p className="text-zinc-500 dark:text-secondary text-xs font-bold uppercase tracking-widest mt-2 sm:mt-3 flex items-center gap-1">
               <Wallet size={12} /> {t('dashboard.netWorth')}
             </p>
           </div>
 
-          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-2xl border border-zinc-200 dark:border-white/10 shadow-2xl relative overflow-hidden group transition-colors">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 blur-[40px] rounded-full -mr-12 -mt-12 group-hover:bg-emerald-500/20 transition-colors" />
-            <p className="text-[#ceceda] text-[13px] font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">{t('dashboard.monthlyIncome')}</p>
+          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-2xl border border-border shadow-2xl relative overflow-hidden group transition-colors">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-accent/10 blur-[40px] rounded-full -mr-12 -mt-12 group-hover:bg-accent/20 transition-colors" />
+            <p className="text-zinc-500 dark:text-secondary text-[13px] font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">{t('dashboard.monthlyIncome')}</p>
             <div className="flex items-end gap-2 relative z-10">
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-emerald-400 tracking-tighter">{currencySymbol}{stats.currentIncome.toLocaleString()}</h3>
               <ArrowUpRight className="text-emerald-400 mb-1 sm:mb-1.5" size={16} />
             </div>
-            <p className="text-[#ceceda] text-[12px] font-bold uppercase tracking-widest mt-2 sm:mt-3">{t('dashboard.totalReceived')}</p>
+            <p className="text-zinc-500 dark:text-secondary text-[12px] font-bold uppercase tracking-widest mt-2 sm:mt-3">{t('dashboard.totalReceived')}</p>
           </div>
 
-          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-2xl border border-zinc-200 dark:border-white/10 shadow-2xl relative overflow-hidden group transition-colors">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/10 blur-[40px] rounded-full -mr-12 -mt-12 group-hover:bg-red-500/20 transition-colors" />
-            <p className="text-[#ceceda] text-[13px] font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">{t('dashboard.monthlySpending')}</p>
+          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-2xl border border-border shadow-2xl relative overflow-hidden group transition-colors">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-expense/10 blur-[40px] rounded-full -mr-12 -mt-12 group-hover:bg-expense/20 transition-colors" />
+            <p className="text-zinc-500 dark:text-secondary text-[13px] font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">{t('dashboard.monthlySpending')}</p>
             <div className="flex items-end gap-2 relative z-10">
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-zinc-900 dark:text-white tracking-tighter">{currencySymbol}{stats.currentExpense.toLocaleString()}</h3>
-              <div className={`flex items-center gap-1 text-[11px] sm:text-xs font-black mb-1 sm:mb-1.5 px-1.5 sm:px-2 py-0.5 rounded-full ${percentChange > 0 ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-primary tracking-tighter">{currencySymbol}{stats.currentExpense.toLocaleString()}</h3>
+              <div className={`flex items-center gap-1 text-[11px] sm:text-xs font-black mb-1 sm:mb-1.5 px-1.5 sm:px-2 py-0.5 rounded-full ${percentChange > 0 ? 'bg-expense/10 text-red-400' : 'bg-accent/10 text-emerald-400'}`}>
                 {percentChange > 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
                 {Math.abs(percentChange).toFixed(1)}%
               </div>
             </div>
-            <p className="text-[#ceceda] text-[12px] font-bold uppercase tracking-widest mt-2 sm:mt-3">{t('dashboard.vsLastMonth', { amount: `${currencySymbol}${stats.lastExpense.toLocaleString()}` })}</p>
+            <p className="text-zinc-500 dark:text-secondary text-[12px] font-bold uppercase tracking-widest mt-2 sm:mt-3">{t('dashboard.vsLastMonth', { amount: `${currencySymbol}${stats.lastExpense.toLocaleString()}` })}</p>
           </div>
 
-          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-2xl border border-zinc-200 dark:border-white/10 shadow-2xl relative overflow-hidden group transition-colors">
+          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-2xl border border-border shadow-2xl relative overflow-hidden group transition-colors">
             <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 blur-[40px] rounded-full -mr-12 -mt-12 group-hover:bg-blue-500/20 transition-colors" />
-            <p className="text-[#ceceda] text-[12px] font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">{t('dashboard.healthScore')}</p>
+            <p className="text-zinc-500 dark:text-secondary text-[12px] font-black uppercase tracking-[0.2em] mb-2 sm:mb-3">{t('dashboard.healthScore')}</p>
             <div className="flex items-center gap-2 sm:gap-4 relative z-10">
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-zinc-900 dark:text-white tracking-tighter">{stats.score}<span className="text-[#ddddeb] text-[17px]">/100</span></h3>
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-primary tracking-tighter">{stats.score}<span className="text-zinc-500 dark:text-secondary text-[17px]">/100</span></h3>
               <div className="flex-1 bg-zinc-100 dark:bg-white/5 h-2 sm:h-3 rounded-full overflow-hidden p-0.5 border border-zinc-200 dark:border-white/5">
                 <div 
                   className={`h-full rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(0,0,0,0.5)] ${
-                    stats.score > 70 ? 'bg-emerald-500' : stats.score > 40 ? 'bg-amber-500' : 'bg-red-500'
+                    stats.score > 70 ? 'bg-accent' : stats.score > 40 ? 'bg-amber-500' : 'bg-expense'
                   }`}
                   style={{ width: `${stats.score}%` }}
                 />
               </div>
             </div>
-            <p className="text-[#ceceda] text-[12px] font-bold uppercase tracking-widest mt-2 sm:mt-3">{t('dashboard.aiAnalysis')}</p>
+            <p className="text-zinc-500 dark:text-secondary text-[12px] font-bold uppercase tracking-widest mt-2 sm:mt-3">{t('dashboard.aiAnalysis')}</p>
           </div>
         </div>
       </div>
@@ -220,21 +220,21 @@ export default function Dashboard({
         <div className="flex items-center gap-3 px-2">
           <div className="w-1.5 h-8 bg-violet-500 rounded-full shadow-[0_0_10px_rgba(139,92,246,0.5)]" />
           <div className="space-y-0.5">
-            <h3 className="text-[23px] font-black text-zinc-900 dark:text-white tracking-tight">{t('dashboard.analytics')}</h3>
-            <p className="text-[12px] font-bold text-[#ceceda] uppercase tracking-widest">{t('dashboard.trends')}</p>
+            <h3 className="text-[23px] font-black text-primary tracking-tight">{t('dashboard.analytics')}</h3>
+            <p className="text-[12px] font-bold text-zinc-500 dark:text-secondary uppercase tracking-widest">{t('dashboard.trends')}</p>
           </div>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Budget Progress */}
           {stats.budgetProgress.length > 0 && (
-            <div className="lg:col-span-2 bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-zinc-200 dark:border-white/10 shadow-2xl transition-all hover:shadow-emerald-500/5 group/budget overflow-hidden">
+            <div className="lg:col-span-2 bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-border shadow-2xl transition-all hover:shadow-emerald-500/5 group/budget overflow-hidden">
               <div className="flex justify-between items-center mb-8">
                 <div className="space-y-1">
-                  <h4 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">{t('dashboard.budgetTracking')}</h4>
-                  <p className="text-[11px] font-bold text-[#ceceda] uppercase tracking-widest">{t('dashboard.monthlyAllocation')}</p>
+                  <h4 className="text-lg font-black text-primary tracking-tight">{t('dashboard.budgetTracking')}</h4>
+                  <p className="text-[11px] font-bold text-zinc-500 dark:text-secondary uppercase tracking-widest">{t('dashboard.monthlyAllocation')}</p>
                 </div>
-                <div className="w-10 h-10 bg-zinc-50 dark:bg-white/5 rounded-lg flex items-center justify-center border border-zinc-200 dark:border-white/10 group-hover/budget:border-emerald-500/30 transition-colors">
+                <div className="w-10 h-10 bg-zinc-50 dark:bg-white/5 rounded-lg flex items-center justify-center border border-border group-hover/budget:border-accent/30 transition-colors">
                   <Target size={20} className="text-emerald-400" />
                 </div>
               </div>
@@ -243,10 +243,10 @@ export default function Dashboard({
                   <div key={`${budget.id}-${index}`} className="space-y-3 p-4 rounded-2xl bg-zinc-50/50 dark:bg-white/2 hover:bg-zinc-100 dark:hover:bg-white/5 transition-all border border-transparent hover:border-zinc-200 dark:hover:border-white/10">
                     <div className="flex justify-between items-end">
                       <div>
-                        <p className="text-[13px] font-black text-[#ceceda] uppercase tracking-widest">{budget.category}</p>
-                        <p className="text-xs font-black text-zinc-900 dark:text-white">{currencySymbol}{budget.spent.toLocaleString()} <span className="text-zinc-500 dark:text-zinc-400 text-xs font-bold">/ {currencySymbol}{budget.amount.toLocaleString()}</span></p>
+                        <p className="text-[13px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest">{budget.category}</p>
+                        <p className="text-xs font-black text-primary">{currencySymbol}{budget.spent.toLocaleString()} <span className="text-secondary text-xs font-bold">/ {currencySymbol}{budget.amount.toLocaleString()}</span></p>
                       </div>
-                      <span className={`text-xs font-black px-2 py-0.5 rounded-full ${budget.percent >= (budget.alertThreshold || 80) ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                      <span className={`text-xs font-black px-2 py-0.5 rounded-full ${budget.percent >= (budget.alertThreshold || 80) ? 'bg-expense/10 text-red-400' : 'bg-accent/10 text-emerald-400'}`}>
                         {Math.round(budget.percent)}%
                       </span>
                     </div>
@@ -263,10 +263,10 @@ export default function Dashboard({
             </div>
           )}
 
-          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-zinc-200 dark:border-white/10 shadow-2xl transition-colors overflow-hidden">
+          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-border shadow-2xl transition-colors overflow-hidden">
             <div className="flex justify-between items-center mb-6">
-              <h4 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">{t('dashboard.expenseDistribution')}</h4>
-              <div className="w-10 h-10 bg-zinc-50 dark:bg-white/5 rounded-lg flex items-center justify-center border border-zinc-200 dark:border-white/10">
+              <h4 className="text-lg font-black text-primary tracking-tight">{t('dashboard.expenseDistribution')}</h4>
+              <div className="w-10 h-10 bg-zinc-50 dark:bg-white/5 rounded-lg flex items-center justify-center border border-border">
                 <PieChartIcon size={20} className="text-emerald-400" />
               </div>
             </div>
@@ -303,7 +303,7 @@ export default function Dashboard({
                   </RePieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-zinc-600 dark:text-zinc-400 font-bold uppercase tracking-widest text-sm italic">
+                <div className="h-full flex items-center justify-center text-secondary font-bold uppercase tracking-widest text-sm italic">
                   No expense data for this month
                 </div>
               )}
@@ -312,16 +312,16 @@ export default function Dashboard({
               {stats.pieData.map((entry, idx) => (
                 <div key={`${entry.name}-${idx}`} className="flex items-center gap-2 bg-zinc-50 dark:bg-white/5 p-2 rounded-lg border border-zinc-200 dark:border-white/5 h-[36.6px] w-full sm:w-[156.2px] text-left text-[11px]">
                   <div className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)]" style={{ backgroundColor: (COLORS as any)[entry.name] || COLORS.Others }} />
-                  <span className="text-[10px] text-[#ceceda] font-black uppercase tracking-widest text-left">{entry.name}</span>
+                  <span className="text-[10px] text-zinc-500 dark:text-secondary font-black uppercase tracking-widest text-left">{entry.name}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-zinc-200 dark:border-white/10 shadow-2xl transition-colors overflow-hidden">
+          <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-border shadow-2xl transition-colors overflow-hidden">
             <div className="flex justify-between items-center mb-6">
-              <h4 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">{t('dashboard.spendingTrend')}</h4>
-              <div className="w-10 h-10 bg-zinc-50 dark:bg-white/5 rounded-lg flex items-center justify-center border border-zinc-200 dark:border-white/10">
+              <h4 className="text-lg font-black text-primary tracking-tight">{t('dashboard.spendingTrend')}</h4>
+              <div className="w-10 h-10 bg-zinc-50 dark:bg-white/5 rounded-lg flex items-center justify-center border border-border">
                 <TrendingUp size={20} className="text-blue-400" />
               </div>
             </div>
@@ -367,8 +367,8 @@ export default function Dashboard({
           <div className="flex items-center gap-3 px-2">
             <div className="w-1.5 h-8 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
             <div className="space-y-0.5">
-              <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">{t('dashboard.financialGoals')}</h3>
-              <p className="text-[12px] font-bold text-[#ceceda] uppercase tracking-widest">{t('dashboard.longTermProgress')}</p>
+              <h3 className="text-2xl font-black text-primary tracking-tight">{t('dashboard.financialGoals')}</h3>
+              <p className="text-[12px] font-bold text-zinc-500 dark:text-secondary uppercase tracking-widest">{t('dashboard.longTermProgress')}</p>
             </div>
           </div>
           
@@ -378,16 +378,16 @@ export default function Dashboard({
                 ? Math.min(100, (goal.currentAmount / goal.targetAmount) * 100) 
                 : 0;
               return (
-                <div key={goal.id} className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-5 rounded-3xl border border-zinc-200 dark:border-white/10 shadow-xl transition-all hover:shadow-blue-500/5 group/goal overflow-hidden relative">
+                <div key={goal.id} className="bg-white dark:bg-white/5 backdrop-blur-xl p-4 sm:p-5 rounded-3xl border border-border shadow-xl transition-all hover:shadow-blue-500/5 group/goal overflow-hidden relative">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 blur-2xl rounded-full -mr-8 -mt-8 group-hover:bg-blue-500/10 transition-colors" />
                   
                   <div className="space-y-4 relative z-10">
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
-                        <p className="text-xs font-black text-[#ceceda] uppercase tracking-widest">{goal.title}</p>
-                        <p className="text-xl font-black text-zinc-900 dark:text-white">
+                        <p className="text-xs font-black text-zinc-500 dark:text-secondary uppercase tracking-widest">{goal.title}</p>
+                        <p className="text-xl font-black text-primary">
                           {currencySymbol}{goal.currentAmount.toLocaleString()} 
-                          <span className="text-zinc-500 dark:text-zinc-400 text-sm font-bold ml-1">/ {currencySymbol}{goal.targetAmount.toLocaleString()}</span>
+                          <span className="text-secondary text-sm font-bold ml-1">/ {currencySymbol}{goal.targetAmount.toLocaleString()}</span>
                         </p>
                       </div>
                       <div className="bg-blue-500/10 text-blue-400 p-2 rounded-xl border border-blue-500/20">
@@ -396,7 +396,7 @@ export default function Dashboard({
                     </div>
 
                     <div className="space-y-2">
-                      <div className="flex justify-between text-[11px] font-black text-[#ceceda] uppercase tracking-widest">
+                      <div className="flex justify-between text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest">
                         <span className="text-[12px]">{t('dashboard.progress')}</span>
                         <span className="text-blue-400">{Math.round(progress)}%</span>
                       </div>
@@ -420,7 +420,7 @@ export default function Dashboard({
       <div className="flex justify-center pt-8 pb-4 sm:hidden">
         <button 
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex items-center gap-2 px-6 py-3 bg-zinc-100 dark:bg-white/5 rounded-full text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all border border-zinc-200 dark:border-white/10"
+          className="flex items-center gap-2 px-6 py-3 bg-zinc-100 dark:bg-white/5 rounded-full text-[11px] font-black uppercase tracking-widest text-secondary hover:text-zinc-900 dark:hover:text-white transition-all border border-border"
         >
           <ArrowUpRight size={17} className="-rotate-45 text-[#0e0e0f]" />
           {t('app.back_to_top')}

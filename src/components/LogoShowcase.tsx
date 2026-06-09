@@ -34,20 +34,20 @@ export default function LogoShowcase() {
   };
 
   return (
-    <div className="p-10 bg-white dark:bg-zinc-900 rounded-[48px] border border-zinc-100 dark:border-white/5 shadow-xl space-y-8">
+    <div className="p-10 bg-card rounded-[48px] border border-border shadow-xl space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h3 className="text-[25px] font-black text-zinc-900 dark:text-white tracking-tight">
+          <h3 className="text-[25px] font-black text-primary tracking-tight">
             {t('logo.title')}
           </h3>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
+          <p className="text-sm text-secondary font-medium">
             {t('logo.desc')}
           </p>
         </div>
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-accent text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-accent transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
         >
           {loading ? (
             <>
@@ -63,7 +63,7 @@ export default function LogoShowcase() {
         </button>
       </div>
 
-      <div className="relative aspect-square w-full max-w-md mx-auto bg-zinc-50 dark:bg-zinc-950 rounded-[32px] border-2 border-dashed border-zinc-200 dark:border-white/10 flex items-center justify-center overflow-hidden group">
+      <div className="relative aspect-square w-full max-w-md mx-auto bg-background rounded-[32px] border-2 border-dashed border-border flex items-center justify-center overflow-hidden group">
         <AnimatePresence mode="wait">
           {logoUrl ? (
             <motion.div
@@ -122,7 +122,7 @@ export default function LogoShowcase() {
         ].map((spec, i) => (
           <div key={i} className="p-4 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-100 dark:border-white/10">
             <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">{spec.label}</p>
-            <p className="text-sm font-bold text-zinc-900 dark:text-white">{spec.value}</p>
+            <p className="text-sm font-bold text-primary">{spec.value}</p>
           </div>
         ))}
       </div>

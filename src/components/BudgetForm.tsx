@@ -32,8 +32,8 @@ export default function BudgetForm({ onClose, onAdd, currencySymbol, customCateg
     <div className="p-8 space-y-8">
       <div className="flex justify-between items-center">
         <div className="space-y-2">
-          <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">New Budget</h3>
-          <p className="text-[#ceceda] text-[11px] font-bold uppercase tracking-widest">Define your limit</p>
+          <h3 className="text-2xl font-black text-primary tracking-tight">New Budget</h3>
+          <p className="text-zinc-500 dark:text-secondary text-[11px] font-bold uppercase tracking-widest">Define your limit</p>
         </div>
         <button 
           onClick={onClose}
@@ -45,7 +45,7 @@ export default function BudgetForm({ onClose, onAdd, currencySymbol, customCateg
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-widest ml-1">Category</label>
+          <label className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest ml-1">Category</label>
           <div className="grid grid-cols-3 gap-2 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
             {categories.map(cat => (
               <button
@@ -56,8 +56,8 @@ export default function BudgetForm({ onClose, onAdd, currencySymbol, customCateg
                   cat === 'Entertainment' ? 'col-span-2' : ''
                 } ${
                   newBudget.category === cat 
-                    ? 'bg-emerald-500 border-emerald-500 text-zinc-950' 
-                    : 'bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-zinc-500'
+                    ? 'bg-accent border-accent text-zinc-950' 
+                    : 'bg-zinc-50 dark:bg-white/5 border-border text-zinc-500'
                 }`}
               >
                 {cat}
@@ -67,19 +67,19 @@ export default function BudgetForm({ onClose, onAdd, currencySymbol, customCateg
         </div>
 
         <div className="space-y-2">
-          <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-widest ml-1">Amount ({currencySymbol})</label>
+          <label className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest ml-1">Amount ({currencySymbol})</label>
           <input 
             type="number"
             value={newBudget.amount || ''}
             onChange={(e) => setNewBudget({ ...newBudget, amount: Number(e.target.value) })}
-            className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-4 px-6 text-zinc-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-black text-xl"
+            className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-2xl py-4 px-6 text-primary outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-black text-xl"
             placeholder="0.00"
             required
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-widest ml-1">Alert Threshold ({newBudget.alertThreshold}%)</label>
+          <label className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest ml-1">Alert Threshold ({newBudget.alertThreshold}%)</label>
           <input 
             type="range"
             min="10"
@@ -89,7 +89,7 @@ export default function BudgetForm({ onClose, onAdd, currencySymbol, customCateg
             onChange={(e) => setNewBudget({ ...newBudget, alertThreshold: Number(e.target.value) })}
             className="w-full h-2 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
           />
-          <div className="flex justify-between text-sm font-bold text-[#ceceda]">
+          <div className="flex justify-between text-sm font-bold text-zinc-500 dark:text-secondary">
             <span>10%</span>
             <span>50%</span>
             <span>100%</span>
@@ -101,7 +101,7 @@ export default function BudgetForm({ onClose, onAdd, currencySymbol, customCateg
             type="button"
             onClick={() => setNewBudget({ ...newBudget, period: 'monthly' })}
             className={`flex-1 py-3 rounded-xl font-bold text-xs border transition-all ${
-              newBudget.period === 'monthly' ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-950' : 'bg-zinc-50 dark:bg-white/5 text-zinc-500'
+              newBudget.period === 'monthly' ? 'bg-card text-primary' : 'bg-zinc-50 dark:bg-white/5 text-zinc-500'
             }`}
           >
             Monthly
@@ -110,7 +110,7 @@ export default function BudgetForm({ onClose, onAdd, currencySymbol, customCateg
             type="button"
             onClick={() => setNewBudget({ ...newBudget, period: 'weekly' })}
             className={`flex-1 py-3 rounded-xl font-bold text-xs border transition-all ${
-              newBudget.period === 'weekly' ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-950' : 'bg-zinc-50 dark:bg-white/5 text-zinc-500'
+              newBudget.period === 'weekly' ? 'bg-card text-primary' : 'bg-zinc-50 dark:bg-white/5 text-zinc-500'
             }`}
           >
             Weekly
@@ -127,7 +127,7 @@ export default function BudgetForm({ onClose, onAdd, currencySymbol, customCateg
           </button>
           <button 
             type="submit"
-            className="flex-[2] py-4 bg-emerald-500 text-zinc-950 rounded-2xl font-black shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+            className="flex-[2] py-4 bg-accent text-zinc-950 rounded-2xl font-black shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
           >
             <Plus size={18} />
             Create Budget

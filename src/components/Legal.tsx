@@ -39,7 +39,7 @@ export default function Legal({ type, onBack }: LegalProps) {
     policies: {
       title: "Privacy Policy",
       subtitle: "Your privacy is our priority",
-      icon: <Shield className="text-emerald-500" />,
+      icon: <Shield className="text-accent" />,
       sections: [
         {
           title: "1. Information Collection",
@@ -106,11 +106,11 @@ export default function Legal({ type, onBack }: LegalProps) {
 
       <div className="space-y-8">
         <div className="flex items-center gap-6">
-          <div className="p-4 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-white/5 shadow-xl">
+          <div className="p-4 bg-card rounded-3xl border border-border shadow-xl">
             {active.icon}
           </div>
           <div className="space-y-1">
-            <h3 className="text-[25px] font-black text-zinc-900 dark:text-white tracking-tight">{active.title}</h3>
+            <h3 className="text-[25px] font-black text-primary tracking-tight">{active.title}</h3>
             <p className="text-[12px] text-zinc-500 font-bold uppercase tracking-widest">{active.subtitle}</p>
           </div>
         </div>
@@ -122,13 +122,13 @@ export default function Legal({ type, onBack }: LegalProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="p-8 bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-100 dark:border-white/5 shadow-sm space-y-4"
+              className="p-8 bg-card rounded-[32px] border border-border shadow-sm space-y-4"
             >
-              <h3 className="text-[19px] font-black text-zinc-900 dark:text-white flex items-center gap-3">
-                <CheckCircle2 size={20} className="text-emerald-500" />
+              <h3 className="text-[19px] font-black text-primary flex items-center gap-3">
+                <CheckCircle2 size={20} className="text-accent" />
                 {section.title}
               </h3>
-              <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium text-[15px]">
+              <p className="text-secondary leading-relaxed font-medium text-[15px]">
                 {section.body}
               </p>
             </motion.div>
@@ -136,10 +136,10 @@ export default function Legal({ type, onBack }: LegalProps) {
         </div>
       </div>
 
-      <div className="p-10 bg-emerald-500/5 border border-emerald-500/10 rounded-[40px] text-center space-y-4">
-        <Shield className="mx-auto text-emerald-500" size={32} />
-        <p className="text-[14px] font-bold text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
-          Built on Google Cloud infrastructure â€” the same platform trusted by millions of applications worldwide.
+      <div className="p-10 bg-accent/5 border border-accent/10 rounded-[40px] text-center space-y-4">
+        <Shield className="mx-auto text-accent" size={32} />
+        <p className="text-[14px] font-bold text-secondary max-w-md mx-auto">
+          Built on Google Cloud infrastructure — the same platform trusted by millions of applications worldwide.
         </p>
       </div>
     </div>

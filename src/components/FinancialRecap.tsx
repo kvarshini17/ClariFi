@@ -166,7 +166,7 @@ export default React.memo(function FinancialRecap({ transactions, currencySymbol
   }, [transactions, selectedDate, mode]);
 
   const steps = [
-    { title: t('recap.steps.recap'), color: "from-blue-600 to-indigo-700" },
+    { title: t('recap.steps.recap'), color: "from-blue-600 to-emerald-700" },
     { title: t('recap.steps.big_picture'), color: "from-emerald-500 to-teal-700" },
     { title: t('recap.steps.spotlight'), color: "from-purple-600 to-pink-700" },
     { title: t('recap.steps.rhythm'), color: "from-orange-500 to-rose-700" },
@@ -270,7 +270,7 @@ export default React.memo(function FinancialRecap({ transactions, currencySymbol
           <Calendar className="text-zinc-400" size={40} />
         </div>
         <div className="space-y-2">
-          <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">{t('recap.no_data')}</h3>
+          <h3 className="text-2xl font-black text-primary tracking-tight">{t('recap.no_data')}</h3>
           <p className="text-zinc-500 font-medium">{t('recap.try_different')}</p>
         </div>
         <div className="flex justify-center gap-4">
@@ -282,13 +282,13 @@ export default React.memo(function FinancialRecap({ transactions, currencySymbol
           </button>
           <button 
             onClick={() => setSelectedDate(new Date())}
-            className="px-4 py-2 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-white/10 text-[11px] font-black uppercase tracking-widest"
+            className="px-4 py-2 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-border text-[11px] font-black uppercase tracking-widest"
           >
             {t('recap.today')}
           </button>
           <button 
             onClick={() => setMode(mode === 'monthly' ? 'yearly' : 'monthly')}
-            className="px-6 py-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl font-black text-xs uppercase tracking-widest"
+            className="px-6 py-2 bg-card text-primary rounded-xl font-black text-xs uppercase tracking-widest"
           >
             {t('recap.switch_to', { mode: mode === 'monthly' ? t('recap.yearly') : t('recap.monthly') })}
           </button>
@@ -308,7 +308,7 @@ export default React.memo(function FinancialRecap({ transactions, currencySymbol
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="space-y-1">
-          <h3 className="text-[29px] font-black text-zinc-900 dark:text-white tracking-tight">
+          <h3 className="text-[29px] font-black text-primary tracking-tight">
             {mode === 'yearly' ? t('recap.yearly') : t('recap.monthly')} {t('recap.title')}
           </h3>
           <p className="text-zinc-500 text-[13px] font-bold uppercase tracking-widest">
@@ -317,11 +317,11 @@ export default React.memo(function FinancialRecap({ transactions, currencySymbol
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="flex gap-1 bg-zinc-100 dark:bg-white/5 p-1 rounded-xl border border-zinc-200 dark:border-white/10">
+          <div className="flex gap-1 bg-zinc-100 dark:bg-white/5 p-1 rounded-xl border border-border">
             <button 
               onClick={() => setMode('monthly')}
               className={`px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${
-                mode === 'monthly' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500'
+                mode === 'monthly' ? 'bg-white dark:bg-zinc-800 text-primary shadow-sm' : 'text-zinc-500'
               }`}
             >
               {t('recap.monthly')}
@@ -329,7 +329,7 @@ export default React.memo(function FinancialRecap({ transactions, currencySymbol
             <button 
               onClick={() => setMode('yearly')}
               className={`px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${
-                mode === 'yearly' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500'
+                mode === 'yearly' ? 'bg-white dark:bg-zinc-800 text-primary shadow-sm' : 'text-zinc-500'
               }`}
             >
               {t('recap.yearly')}
@@ -339,19 +339,19 @@ export default React.memo(function FinancialRecap({ transactions, currencySymbol
           <div className="flex gap-2">
             <button 
               onClick={() => setSelectedDate(mode === 'yearly' ? subYears(selectedDate, 1) : subMonths(selectedDate, 1))}
-              className="p-3 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-white/10"
+              className="p-3 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-border"
             >
               <ChevronLeft size={18} />
             </button>
             <button 
               onClick={() => setSelectedDate(new Date())}
-              className="px-4 py-2 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-white/10 text-[11px] font-black uppercase tracking-widest"
+              className="px-4 py-2 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-border text-[11px] font-black uppercase tracking-widest"
             >
               {t('recap.today')}
             </button>
             <button 
               onClick={() => setSelectedDate(mode === 'yearly' ? addYears(selectedDate, 1) : addMonths(selectedDate, 1))}
-              className="p-3 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-white/10"
+              className="p-3 bg-zinc-100 dark:bg-white/5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-border"
             >
               <ChevronRight size={18} />
             </button>
@@ -655,7 +655,7 @@ export default React.memo(function FinancialRecap({ transactions, currencySymbol
       {/* Summary Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard 
-          icon={<TrendingUp className="text-emerald-500" />}
+          icon={<TrendingUp className="text-accent" />}
           label={t('recap.total_inflow')}
           value={`${currencySymbol}${recapData.totalIncome.toLocaleString()}`}
         />
@@ -681,14 +681,14 @@ export default React.memo(function FinancialRecap({ transactions, currencySymbol
 
 function SummaryCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
   return (
-    <div className="glass-card p-6 rounded-3xl border border-zinc-200 dark:border-white/10 shadow-xl">
+    <div className="glass-card p-6 rounded-3xl border border-border shadow-xl">
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 bg-zinc-50 dark:bg-white/5 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-white/10">
+        <div className="w-10 h-10 bg-zinc-50 dark:bg-white/5 rounded-xl flex items-center justify-center border border-border">
           {icon}
         </div>
         <p className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">{label}</p>
       </div>
-      <p className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">{value}</p>
+      <p className="text-2xl font-black text-primary tracking-tight">{value}</p>
     </div>
   );
 }

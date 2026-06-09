@@ -1,4 +1,4 @@
-export type TransactionType = 'expense' | 'income';
+﻿export type TransactionType = 'expense' | 'income';
 export type Category = string;
 export type Theme = 'light' | 'dark' | 'system';
 export type FontSize = 'small' | 'medium' | 'large';

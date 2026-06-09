@@ -35,12 +35,12 @@ export default function BudgetManager({ uid, budgets, currencySymbol, onAddClick
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h3 className="text-[25px] font-black text-zinc-900 dark:text-white tracking-tight">Budget Planning</h3>
-          <p className="text-zinc-600 dark:text-zinc-400 text-[12px] font-bold uppercase tracking-widest">Set your financial boundaries</p>
+          <h3 className="text-[25px] font-black text-primary tracking-tight">Budget Planning</h3>
+          <p className="text-secondary text-[12px] font-bold uppercase tracking-widest">Set your financial boundaries</p>
         </div>
         <button 
           onClick={onAddClick}
-          className="p-3 bg-emerald-500 text-zinc-950 rounded-2xl shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all"
+          className="p-3 bg-accent text-zinc-950 rounded-2xl shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all"
         >
           <Plus size={20} />
         </button>
@@ -54,17 +54,17 @@ export default function BudgetManager({ uid, budgets, currencySymbol, onAddClick
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white dark:bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-zinc-200 dark:border-white/10 shadow-xl flex items-center justify-between group"
+              className="bg-white dark:bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-border shadow-xl flex items-center justify-between group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-zinc-100 dark:bg-white/5 rounded-2xl flex items-center justify-center border border-zinc-200 dark:border-white/10">
+                <div className="w-12 h-12 bg-zinc-100 dark:bg-white/5 rounded-2xl flex items-center justify-center border border-border">
                   <Target className="text-emerald-400" size={24} />
                 </div>
                 <div>
-                  <h4 className="font-black text-zinc-900 dark:text-white font-arial">{budget.category}</h4>
+                  <h4 className="font-black text-primary font-arial">{budget.category}</h4>
                   <div className="flex flex-col">
-                    <p className="text-[12px] font-black text-[#ceceda] uppercase tracking-widest">
-                      {budget.period} â€¢ {currencySymbol}{budget.amount.toLocaleString()}
+                    <p className="text-[12px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest">
+                      {budget.period} • {currencySymbol}{budget.amount.toLocaleString()}
                     </p>
                     <p className="text-[12px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest">
                       Alert at {budget.alertThreshold}%
@@ -78,7 +78,7 @@ export default function BudgetManager({ uid, budgets, currencySymbol, onAddClick
                   <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2">
                     <button 
                       onClick={() => handleDelete(budget)}
-                      className="px-2 py-1 bg-red-500 text-white text-[11px] font-black uppercase tracking-widest rounded-md"
+                      className="px-2 py-1 bg-expense text-white text-[11px] font-black uppercase tracking-widest rounded-md"
                     >
                       Confirm
                     </button>

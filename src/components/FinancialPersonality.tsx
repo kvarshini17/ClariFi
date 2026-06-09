@@ -89,14 +89,14 @@ export default function FinancialPersonality({ transactions }: FinancialPersonal
       animate={{ opacity: 1, scale: 1 }}
       className="glass-card p-6 sm:p-8 rounded-3xl relative overflow-hidden group"
     >
-      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] -mr-32 -mt-32 group-hover:bg-emerald-500/10 transition-colors" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 blur-[100px] -mr-32 -mt-32 group-hover:bg-accent/10 transition-colors" />
       
       <div className="flex flex-col md:flex-row gap-8 items-center">
         <div className="relative">
-          <div className="w-24 h-24 bg-zinc-100 dark:bg-white/5 rounded-[32px] flex items-center justify-center border border-zinc-200 dark:border-white/10 shadow-inner">
+          <div className="w-24 h-24 bg-zinc-100 dark:bg-white/5 rounded-[32px] flex items-center justify-center border border-border shadow-inner">
             {getIcon(personality.type)}
           </div>
-          <div className="absolute -bottom-2 -right-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 text-[11px] font-black px-2 py-1 rounded-lg">
+          <div className="absolute -bottom-2 -right-2 bg-card text-primary text-[11px] font-black px-2 py-1 rounded-lg">
             {personality.score}%
           </div>
         </div>
@@ -107,24 +107,24 @@ export default function FinancialPersonality({ transactions }: FinancialPersonal
               <Brain size={16} className="text-zinc-400" />
               <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.2em]">{t('personality.dna')}</span>
             </div>
-            <h3 className="text-[25px] font-black text-zinc-900 dark:text-white tracking-tight">{personality.type}</h3>
+            <h3 className="text-[25px] font-black text-primary tracking-tight">{personality.type}</h3>
           </div>
           
-          <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-md">
+          <p className="text-secondary leading-relaxed max-w-md">
             {personality.description}
           </p>
 
           <div className="flex flex-wrap justify-center md:justify-start gap-2">
             {personality.traits.map(trait => (
-              <span key={trait} className="px-3 py-1 bg-zinc-100 dark:bg-white/5 rounded-full text-[11px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider border border-zinc-200 dark:border-white/10">
+              <span key={trait} className="px-3 py-1 bg-zinc-100 dark:bg-white/5 rounded-full text-[11px] font-bold text-secondary uppercase tracking-wider border border-border">
                 {trait}
               </span>
             ))}
           </div>
         </div>
 
-        <div className="w-full md:w-64 p-6 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-3xl border border-emerald-500/20 space-y-3">
-          <div className="flex items-center gap-2 text-emerald-500">
+        <div className="w-full md:w-64 p-6 bg-accent/5 dark:bg-accent/10 rounded-3xl border border-accent/20 space-y-3">
+          <div className="flex items-center gap-2 text-accent">
             <Sparkles size={14} />
             <span className="text-[11px] font-black uppercase tracking-widest">{t('personality.expert_advice')}</span>
           </div>

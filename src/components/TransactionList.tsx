@@ -40,14 +40,14 @@ const CATEGORY_ICONS: Record<Category, React.ReactNode> = {
 };
 
 const CATEGORY_COLORS: Record<Category, string> = {
-  Food: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  Food: 'bg-accent/10 text-emerald-400 border-accent/20',
   Travel: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   Bills: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
   Shopping: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
-  Health: 'bg-red-500/10 text-red-400 border-red-500/20',
+  Health: 'bg-expense/10 text-red-400 border-expense/20',
   Entertainment: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
   Others: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20',
-  Income: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  Income: 'bg-accent/10 text-emerald-400 border-accent/20',
 };
 
 export default function TransactionList({ transactions, currencySymbol }: TransactionListProps) {
@@ -142,12 +142,12 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
 
   if (transactions.length === 0) {
     return (
-      <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-20 rounded-[40px] border border-zinc-200 dark:border-white/10 text-center space-y-6 shadow-2xl transition-colors">
-        <div className="w-24 h-24 bg-zinc-50 dark:bg-white/5 rounded-3xl flex items-center justify-center mx-auto border border-zinc-200 dark:border-white/10">
+      <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-20 rounded-[40px] border border-border text-center space-y-6 shadow-2xl transition-colors">
+        <div className="w-24 h-24 bg-zinc-50 dark:bg-white/5 rounded-3xl flex items-center justify-center mx-auto border border-border">
           <Receipt className="text-zinc-400 dark:text-zinc-700" size={48} />
         </div>
         <div className="space-y-2">
-          <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">{t('transactions.no_transactions')}</h3>
+          <h3 className="text-2xl font-black text-primary tracking-tight">{t('transactions.no_transactions')}</h3>
           <p className="text-zinc-500 font-medium">{t('transactions.start_journey')}</p>
         </div>
       </div>
@@ -159,13 +159,13 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
       {/* Search and Filters Bar */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative group">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#d6d6e7] group-focus-within:text-emerald-500 transition-colors" size={19} style={{ width: '23px', height: '19px' }} />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-secondary group-focus-within:text-accent transition-colors" size={19} style={{ width: '23px', height: '19px' }} />
           <input 
             type="text"
             placeholder={t('common.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all h-[48.6px]"
+            className="w-full bg-white dark:bg-white/5 border border-border rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all h-[48.6px]"
           />
         </div>
         <div className="flex gap-2">
@@ -173,8 +173,8 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
             onClick={() => setShowFilters(!showFilters)}
             className={`px-6 py-4 rounded-2xl border transition-all flex items-center gap-2 font-sans font-black text-base uppercase tracking-widest h-[48.6px] ${
               showFilters 
-                ? 'bg-emerald-500 border-emerald-500 text-zinc-950' 
-                : 'bg-white dark:bg-white/5 border-zinc-200 dark:border-white/10 text-zinc-500 hover:border-zinc-300'
+                ? 'bg-accent border-accent text-zinc-950' 
+                : 'bg-white dark:bg-white/5 border-border text-zinc-500 hover:border-zinc-300'
             }`}
           >
             <Filter size={17} className={showFilters ? 'text-zinc-950' : 'text-[#0e0e0f]'} />
@@ -184,7 +184,7 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="appearance-none bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-4 pl-6 pr-12 text-xs font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer w-[176.6px] h-[48.6px]"
+              className="appearance-none bg-white dark:bg-white/5 border border-border rounded-2xl py-4 pl-6 pr-12 text-xs font-black uppercase tracking-widest text-secondary focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer w-[176.6px] h-[48.6px]"
             >
               <option value="date-desc">{t('transactions.sort_newest')}</option>
               <option value="date-asc">{t('transactions.sort_oldest')}</option>
@@ -205,37 +205,37 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-3xl border border-zinc-200 dark:border-white/10 space-y-6">
+            <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-3xl border border-border space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black uppercase tracking-widest text-[#ceceda] ml-2">{t('transactions.start_date')}</label>
+                  <label className="text-[11px] font-black uppercase tracking-widest text-zinc-500 dark:text-secondary ml-2">{t('transactions.start_date')}</label>
                   <input 
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                    className="w-full bg-card border border-border rounded-xl py-3 px-4 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black uppercase tracking-widest text-[#ceceda] ml-2">{t('transactions.end_date')}</label>
+                  <label className="text-[11px] font-black uppercase tracking-widest text-zinc-500 dark:text-secondary ml-2">{t('transactions.end_date')}</label>
                   <input 
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                    className="w-full bg-card border border-border rounded-xl py-3 px-4 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-[#ceceda] ml-2">{t('transactions.categories')}</label>
+                <label className="text-[11px] font-black uppercase tracking-widest text-zinc-500 dark:text-secondary ml-2">{t('transactions.categories')}</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
                   <button 
                     onClick={() => setSelectedCategory('All')}
                     className={`px-3 py-2 rounded-xl text-xs font-black uppercase tracking-widest border transition-all ${
                       selectedCategory === 'All' 
-                        ? 'bg-emerald-500 border-emerald-500 text-zinc-950' 
-                        : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-white/10 text-zinc-500'
+                        ? 'bg-accent border-accent text-zinc-950' 
+                        : 'bg-card border-border text-zinc-500'
                     }`}
                   >
                     {t('common.all')}
@@ -246,8 +246,8 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
                       onClick={() => setSelectedCategory(cat)}
                       className={`px-3 py-2 rounded-xl text-xs font-black uppercase tracking-widest border transition-all flex items-center justify-center gap-2 ${
                         selectedCategory === cat 
-                          ? 'bg-emerald-500 border-emerald-500 text-zinc-950' 
-                          : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-white/10 text-zinc-500'
+                          ? 'bg-accent border-accent text-zinc-950' 
+                          : 'bg-card border-border text-zinc-500'
                       }`}
                     >
                       {cat}
@@ -264,7 +264,7 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
                     setSelectedCategory('All');
                     setSearchQuery('');
                   }}
-                  className="text-[11px] font-black uppercase tracking-widest text-[#ceceda] hover:text-emerald-500 transition-colors"
+                  className="text-[11px] font-black uppercase tracking-widest text-zinc-500 dark:text-secondary hover:text-accent transition-colors"
                 >
                   {t('transactions.reset_filters')}
                 </button>
@@ -280,7 +280,7 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
           {filteredTransactions.map((tx) => (
             <div 
               key={tx.id} 
-              className="bg-white dark:bg-white/5 p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-zinc-200 dark:border-white/10 shadow-xl relative group"
+              className="bg-white dark:bg-white/5 p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-border shadow-xl relative group"
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="flex items-center gap-3 sm:gap-4">
@@ -288,12 +288,12 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
                     {getCategoryIcon(tx.category, isSmall ? 14 : 16)}
                   </div>
                   <div className="min-w-0">
-                    <p className="font-black text-zinc-900 dark:text-white tracking-tight text-base truncate">{tx.category}</p>
-                    <p className="text-sm text-[#ceceda] font-bold">{format(tx.date, 'MMM dd, yyyy')}</p>
+                    <p className="font-black text-primary tracking-tight text-base truncate">{tx.category}</p>
+                    <p className="text-sm text-zinc-500 dark:text-secondary font-bold">{format(tx.date, 'MMM dd, yyyy')}</p>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className={`font-black text-base sm:text-lg tracking-tighter ${tx.type === 'income' ? 'text-emerald-400' : 'text-zinc-900 dark:text-white'}`}>
+                  <p className={`font-black text-base sm:text-lg tracking-tighter ${tx.type === 'income' ? 'text-emerald-400' : 'text-primary'}`}>
                     {tx.type === 'income' ? '+' : '-'}{currencySymbol}{tx.amount.toFixed(2)}
                   </p>
                   <div className="flex justify-end mt-1">
@@ -301,7 +301,7 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
                       <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2">
                         <button 
                           onClick={() => handleDelete(tx.id)}
-                          className="px-2 py-1 bg-red-500 text-white text-[11px] font-black uppercase tracking-widest rounded-md"
+                          className="px-2 py-1 bg-expense text-white text-[11px] font-black uppercase tracking-widest rounded-md"
                         >
                           {t('common.confirm')}
                         </button>
@@ -324,7 +324,7 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
                 </div>
               </div>
               {tx.note && (
-                <p className="mt-2 text-sm text-[#ceceda] font-medium line-clamp-1 sm:line-clamp-2" style={{ lineHeight: '15px' }}>
+                <p className="mt-2 text-sm text-zinc-500 dark:text-secondary font-medium line-clamp-1 sm:line-clamp-2" style={{ lineHeight: '15px' }}>
                   {tx.note}
                 </p>
               )}
@@ -333,17 +333,17 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
         </div>
       ) : (
         /* Desktop Table View */
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-[40px] border border-zinc-200 dark:border-white/10 shadow-2xl overflow-hidden transition-colors">
+        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-[40px] border border-border shadow-2xl overflow-hidden transition-colors">
           <div className="overflow-x-auto max-h-[600px] overflow-y-auto custom-scrollbar">
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-10 bg-zinc-50/95 dark:bg-zinc-900/95 backdrop-blur-md">
                 <tr className="border-b border-zinc-200 dark:border-white/5">
-                  <th className="px-8 py-6 text-sm font-black text-[#ceceda] uppercase tracking-[0.2em]">{t('transactions.type')}</th>
-                  <th className="px-8 py-6 text-sm font-black text-[#ceceda] uppercase tracking-[0.2em]">{t('transactions.categories')}</th>
-                  <th className="px-8 py-6 text-sm font-black text-[#ceceda] uppercase tracking-[0.2em]">{t('transactions.date')}</th>
-                  <th className="px-6 py-6 text-sm font-black text-[#ceceda] uppercase tracking-[0.2em]">{t('transactions.note')}</th>
-                  <th className="px-8 py-6 text-sm font-black text-[#ceceda] uppercase tracking-[0.2em] text-right">{t('transactions.amount')}</th>
-                  <th className="px-8 py-6 text-sm font-black text-[#ceceda] uppercase tracking-[0.2em] text-right">{t('transactions.action')}</th>
+                  <th className="px-8 py-6 text-sm font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em]">{t('transactions.type')}</th>
+                  <th className="px-8 py-6 text-sm font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em]">{t('transactions.categories')}</th>
+                  <th className="px-8 py-6 text-sm font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em]">{t('transactions.date')}</th>
+                  <th className="px-6 py-6 text-sm font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em]">{t('transactions.note')}</th>
+                  <th className="px-8 py-6 text-sm font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] text-right">{t('transactions.amount')}</th>
+                  <th className="px-8 py-6 text-sm font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] text-right">{t('transactions.action')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 dark:divide-white/5">
@@ -352,8 +352,8 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
                     <td className="px-8 py-6">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
                         tx.type === 'income' 
-                          ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
-                          : 'bg-red-500/10 border-red-500/20 text-red-400'
+                          ? 'bg-accent/10 border-accent/20 text-emerald-400' 
+                          : 'bg-expense/10 border-expense/20 text-red-400'
                       }`}>
                         {tx.type === 'income' ? <ArrowUpRight size={18} /> : <ArrowDownRight size={18} />}
                       </div>
@@ -363,19 +363,19 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
                         <div className={`p-3 rounded-2xl border ${getCategoryColor(tx.category)}`}>
                           {getCategoryIcon(tx.category)}
                         </div>
-                        <span className="font-black text-zinc-900 dark:text-white tracking-tight">{tx.category}</span>
+                        <span className="font-black text-primary tracking-tight">{tx.category}</span>
                       </div>
                     </td>
                     <td className="px-8 py-6">
                       <span className="text-base text-zinc-700 dark:text-zinc-300 font-bold">{format(tx.date, 'MMM dd, yyyy')}</span>
                     </td>
                     <td className="px-6 py-6">
-                      <span className="text-base text-zinc-600 dark:text-zinc-400 font-medium truncate max-w-[150px] block">
-                        {tx.note || 'â€”'}
+                      <span className="text-base text-secondary font-medium truncate max-w-[150px] block">
+                        {tx.note || '—'}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <span className={`font-black text-lg tracking-tighter ${tx.type === 'income' ? 'text-emerald-400' : 'text-zinc-900 dark:text-white'}`}>
+                      <span className={`font-black text-lg tracking-tighter ${tx.type === 'income' ? 'text-emerald-400' : 'text-primary'}`}>
                         {tx.type === 'income' ? '+' : '-'}{currencySymbol}{tx.amount.toFixed(2)}
                       </span>
                     </td>
@@ -385,7 +385,7 @@ export default function TransactionList({ transactions, currencySymbol }: Transa
                           <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2">
                             <button 
                               onClick={() => handleDelete(tx.id)}
-                              className="px-3 py-1.5 bg-red-500 text-white text-xs font-black uppercase tracking-widest rounded-lg shadow-lg shadow-red-500/20 hover:scale-105 transition-all"
+                              className="px-3 py-1.5 bg-expense text-white text-xs font-black uppercase tracking-widest rounded-lg shadow-lg shadow-red-500/20 hover:scale-105 transition-all"
                             >
                               {t('common.confirm')}
                             </button>

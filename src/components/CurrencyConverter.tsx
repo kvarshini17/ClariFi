@@ -5,16 +5,16 @@ import { useTranslation } from 'react-i18next';
 
 const POPULAR_CURRENCIES = [
   { code: 'USD', name: 'US Dollar', symbol: '$' },
-  { code: 'EUR', name: 'Euro', symbol: 'â‚¬' },
-  { code: 'GBP', name: 'British Pound', symbol: 'Â£' },
-  { code: 'JPY', name: 'Japanese Yen', symbol: 'Â¥' },
+  { code: 'EUR', name: 'Euro', symbol: '€' },
+  { code: 'GBP', name: 'British Pound', symbol: '£' },
+  { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
   { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
   { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
   { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF' },
-  { code: 'CNY', name: 'Chinese Yuan', symbol: 'Â¥' },
-  { code: 'INR', name: 'Indian Rupee', symbol: 'â‚¹' },
+  { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
+  { code: 'INR', name: 'Indian Rupee', symbol: '?' },
   { code: 'BRL', name: 'Brazilian Real', symbol: 'R$' },
-  { code: 'KRW', name: 'South Korean Won', symbol: 'â‚©' },
+  { code: 'KRW', name: 'South Korean Won', symbol: '?' },
   { code: 'SGD', name: 'Singapore Dollar', symbol: 'S$' },
   { code: 'HKD', name: 'Hong Kong Dollar', symbol: 'HK$' },
   { code: 'NZD', name: 'New Zealand Dollar', symbol: 'NZ$' },
@@ -165,26 +165,26 @@ export default function CurrencyConverter() {
   const convertedAmount = exchangeRate ? (amount * exchangeRate).toFixed(2) : '...';
 
   return (
-    <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-8 rounded-[32px] border border-zinc-200 dark:border-white/10 shadow-2xl relative overflow-hidden group">
+    <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-8 rounded-[32px] border border-border shadow-2xl relative overflow-hidden group">
       {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full -mr-32 -mt-32 blur-[80px] group-hover:bg-emerald-500/10 transition-colors" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -mr-32 -mt-32 blur-[80px] group-hover:bg-accent/10 transition-colors" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full -ml-24 -mb-24 blur-[60px] group-hover:bg-blue-500/10 transition-colors" />
 
       <div className="relative z-10 space-y-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="bg-zinc-100 dark:bg-white/10 p-3 rounded-2xl border border-zinc-200 dark:border-white/10">
-              <Calculator className="text-zinc-900 dark:text-white" size={24} />
+            <div className="bg-zinc-100 dark:bg-white/10 p-3 rounded-2xl border border-border">
+              <Calculator className="text-primary" size={24} />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">{t('settings.converter.title')}</h3>
-              <p className="text-zinc-600 dark:text-zinc-400 text-xs font-bold uppercase tracking-widest">{t('settings.converter.subtitle')}</p>
+              <h3 className="text-2xl font-black text-primary tracking-tight">{t('settings.converter.title')}</h3>
+              <p className="text-secondary text-xs font-bold uppercase tracking-widest">{t('settings.converter.subtitle')}</p>
             </div>
           </div>
           <button 
             onClick={handleRefresh}
             disabled={loading}
-            className="p-3 rounded-xl bg-zinc-100 dark:bg-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-white/20 transition-colors disabled:opacity-50"
+            className="p-3 rounded-xl bg-zinc-100 dark:bg-white/10 text-secondary hover:bg-zinc-200 dark:hover:bg-white/20 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -193,18 +193,18 @@ export default function CurrencyConverter() {
         <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-6 items-center">
           {/* From Currency */}
           <div className="space-y-3">
-            <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 uppercase tracking-widest ml-1">{t('settings.converter.from')}</label>
+            <label className="text-xs font-black text-secondary uppercase tracking-widest ml-1">{t('settings.converter.from')}</label>
             <div className="relative">
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full bg-zinc-50 dark:bg-black/20 border border-zinc-200 dark:border-white/10 rounded-2xl px-5 py-4 text-xl font-black text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                className="w-full bg-zinc-50 dark:bg-black/20 border border-border rounded-2xl px-5 py-4 text-xl font-black text-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
               />
               <select
                 value={fromCurrency}
                 onChange={(e) => setFromCurrency(e.target.value)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 dark:text-white focus:outline-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white dark:bg-zinc-800 border border-border rounded-xl px-3 py-1.5 text-sm font-bold text-primary focus:outline-none"
               >
                 {POPULAR_CURRENCIES.map(curr => (
                   <option key={curr.code} value={curr.code}>{curr.code}</option>
@@ -217,7 +217,7 @@ export default function CurrencyConverter() {
           <div className="flex justify-center pt-6">
             <button 
               onClick={handleSwap}
-              className="p-4 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:scale-110 active:scale-95 transition-all shadow-xl shadow-zinc-900/10 dark:shadow-white/10"
+              className="p-4 rounded-2xl bg-card text-primary hover:scale-110 active:scale-95 transition-all shadow-xl shadow-zinc-900/10 dark:shadow-white/10"
             >
               <ArrowRightLeft className="w-6 h-6" />
             </button>
@@ -225,9 +225,9 @@ export default function CurrencyConverter() {
 
           {/* To Currency */}
           <div className="space-y-3">
-            <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 uppercase tracking-widest ml-1">{t('settings.converter.to')}</label>
+            <label className="text-xs font-black text-secondary uppercase tracking-widest ml-1">{t('settings.converter.to')}</label>
             <div className="relative">
-              <div className="w-full bg-zinc-50 dark:bg-black/20 border border-zinc-200 dark:border-white/10 rounded-2xl px-5 py-4 text-xl font-black text-zinc-900 dark:text-white flex items-center">
+              <div className="w-full bg-zinc-50 dark:bg-black/20 border border-border rounded-2xl px-5 py-4 text-xl font-black text-primary flex items-center">
                 {loading ? (
                   <div className="h-7 w-24 bg-zinc-200 dark:bg-white/10 animate-pulse rounded-lg" />
                 ) : (
@@ -237,7 +237,7 @@ export default function CurrencyConverter() {
               <select
                 value={toCurrency}
                 onChange={(e) => setToCurrency(e.target.value)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 dark:text-white focus:outline-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white dark:bg-zinc-800 border border-border rounded-xl px-3 py-1.5 text-sm font-bold text-primary focus:outline-none"
               >
                 {POPULAR_CURRENCIES.map(curr => (
                   <option key={curr.code} value={curr.code}>{curr.code}</option>
@@ -248,9 +248,9 @@ export default function CurrencyConverter() {
         </div>
 
         {/* Rate Info */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-zinc-100 dark:border-white/5">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${isManual ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'}`}>
+            <div className={`p-2 rounded-lg ${isManual ? 'bg-amber-500/10 text-amber-500' : 'bg-accent/10 text-accent'}`}>
               <TrendingUp size={16} />
             </div>
             <p className="text-base font-bold text-zinc-700 dark:text-zinc-300">
@@ -260,7 +260,7 @@ export default function CurrencyConverter() {
             </p>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-2 text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+            <div className="flex items-center gap-2 text-xs font-black text-secondary uppercase tracking-widest">
               <Globe size={12} />
               <span>{isManual ? 'Manual Entry' : t('settings.converter.market_rate')}</span>
             </div>
@@ -273,16 +273,16 @@ export default function CurrencyConverter() {
         </div>
 
         {error && (
-          <div className="p-6 rounded-3xl bg-red-500/10 border border-red-500/20 text-red-500 space-y-4">
+          <div className="p-6 rounded-3xl bg-expense/10 border border-expense/20 text-expense space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-expense/20 flex items-center justify-center">
                 <RefreshCw size={14} className="animate-spin" />
               </div>
               <p className="text-sm font-bold">{error}</p>
             </div>
             
             <div className="space-y-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-red-500/60">Troubleshooting:</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-expense/60">Troubleshooting:</p>
               <ul className="text-xs font-medium space-y-1 opacity-80 list-disc ml-4">
                 <li>Check your internet connection</li>
                 <li>Ensure you are running the app via a local server (npm run dev)</li>
@@ -293,7 +293,7 @@ export default function CurrencyConverter() {
             <div className="pt-2 flex flex-col sm:flex-row gap-3">
               <button 
                 onClick={() => fetchExchangeRate()}
-                className="flex-1 py-3 bg-red-500 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
+                className="flex-1 py-3 bg-expense text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
               >
                 Retry Auto-Fetch
               </button>
@@ -304,7 +304,7 @@ export default function CurrencyConverter() {
                   placeholder="Enter rate manually..."
                   value={manualRate}
                   onChange={(e) => handleManualRateChange(e.target.value)}
-                  className="w-full py-3 px-4 bg-white dark:bg-zinc-900 border border-red-500/30 rounded-xl text-xs font-bold text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all"
+                  className="w-full py-3 px-4 bg-card border border-expense/30 rounded-xl text-xs font-bold text-primary focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all"
                 />
               </div>
             </div>

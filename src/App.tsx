@@ -44,6 +44,7 @@ import About from './components/About';
 import Legal from './components/Legal';
 import Support from './components/Support';
 import CurrencyConverter from './components/CurrencyConverter';
+import IntroScreen from './components/IntroScreen';
 import { LogIn, PieChart, Plus, List, Lightbulb, Sparkles, Wallet, TrendingUp, TrendingDown, Settings, Flame, Target, Camera, Bell, Brain, History, Trophy, Info, ShieldCheck, FileText, Lock, LifeBuoy, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import React from 'react';
@@ -59,6 +60,7 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showIntro, setShowIntro] = useState(true);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'expenses' | 'insights' | 'budgets' | 'goals' | 'challenges' | 'settings' | 'about' | 'terms' | 'policies' | 'security' | 'support'>('dashboard');
@@ -67,6 +69,7 @@ export default function App() {
   const [showAddBudget, setShowAddBudget] = useState(false);
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [preLoginView, setPreLoginView] = useState<'main' | 'terms' | 'policies'>('main');
   const [showStreakPrompt, setShowStreakPrompt] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -86,8 +89,9 @@ export default function App() {
     if (showNotifications) { setShowNotifications(false); handled = true; }
     if (showStreakPrompt) { setShowStreakPrompt(false); handled = true; }
     if (showCurrencyConverter) { setShowCurrencyConverter(false); handled = true; }
+    if (preLoginView !== 'main') { setPreLoginView('main'); handled = true; }
     return handled;
-  }, [showAddForm, showAddBudget, showAddGoal, showAuthModal, showScanner, showNotifications, showStreakPrompt, showCurrencyConverter]);
+  }, [showAddForm, showAddBudget, showAddGoal, showAuthModal, showScanner, showNotifications, showStreakPrompt, showCurrencyConverter, preLoginView]);
 
   // Handle hardware/browser back button
   useEffect(() => {
@@ -280,37 +284,6 @@ export default function App() {
     }
   }, [profile?.fontSize]);
 
-  // Theme Management
-  useEffect(() => {
-    const applyTheme = (theme: Theme) => {
-      const root = window.document.documentElement;
-      
-      if (theme === 'system') {
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        if (systemTheme === 'dark') {
-          root.classList.add('dark');
-          root.classList.remove('light');
-        } else {
-          root.classList.add('light');
-          root.classList.remove('dark');
-        }
-      } else {
-        if (theme === 'dark') {
-          root.classList.add('dark');
-          root.classList.remove('light');
-        } else {
-          root.classList.add('light');
-          root.classList.remove('dark');
-        }
-      }
-    };
-
-    if (profile?.theme) {
-      applyTheme(profile.theme);
-    } else {
-      applyTheme('dark'); // Default to dark for this app's aesthetic
-    }
-  }, [profile?.theme]);
 
   // Language Management
   useEffect(() => {
@@ -385,117 +358,51 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
       </div>
     );
   }
 
+  if (showIntro) {
+    return <IntroScreen onComplete={() => setShowIntro(false)} />;
+  }
+
   if (!user) {
+    if (preLoginView !== 'main') {
+      return (
+        <div className="min-h-screen bg-background">
+          <Legal type={preLoginView} onBack={() => setPreLoginView('main')} />
+        </div>
+      );
+    }
+
     return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4 overflow-hidden relative">
-        {/* Grid Background Overlay */}
-        <div 
-          className="absolute inset-0 opacity-[0.15] pointer-events-none" 
-          style={{ 
-            backgroundImage: `linear-gradient(#334155 1px, transparent 1px), linear-gradient(90deg, #334155 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
-          }} 
-        />
-        
-        {/* Animated Background Blobs - Simplified on Mobile */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div 
-            animate={isMobile ? {} : { 
-              scale: [1, 1.2, 1],
-              x: [0, 30, 0],
-              y: [0, 20, 0],
-              opacity: [0.05, 0.1, 0.05] 
-            }}
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-1/4 -left-1/4 w-[300px] sm:w-[800px] h-[300px] sm:h-[800px] bg-emerald-500/10 sm:bg-emerald-500/30 blur-[60px] sm:blur-[140px] rounded-full"
-          />
-          <motion.div 
-            animate={isMobile ? {} : { 
-              scale: [1.2, 1, 1.2],
-              x: [0, -40, 0],
-              y: [0, -30, 0],
-              opacity: [0.05, 0.08, 0.05] 
-            }}
-            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -bottom-1/4 -right-1/4 w-[300px] sm:w-[800px] h-[300px] sm:h-[800px] bg-blue-500/10 sm:bg-blue-500/30 blur-[60px] sm:blur-[140px] rounded-full"
-          />
-        </div>
-
-        {/* Floating Currency Icons - Hidden on Mobile for Performance */}
-        {!isMobile && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(6)].map((_, i) => (
-              <motion.div
-              key={i}
-              initial={{ 
-                x: Math.random() * 100 + '%', 
-                y: Math.random() * 100 + '%',
-                opacity: 0 
-              }}
-              animate={{ 
-                y: [null, '-20px', '20px'],
-                opacity: [0, 0.4, 0],
-                scale: [0.5, 1, 0.5]
-              }}
-              transition={{ 
-                duration: 5 + Math.random() * 5, 
-                repeat: Infinity, 
-                delay: Math.random() * 5 
-              }}
-              className="absolute text-emerald-500/20 text-4xl font-serif select-none"
-            >
-              {['$', '€', '£', '¥'][i % 4]}
-            </motion.div>
-          ))}
-        </div>
-      )}
-
-        <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-16 items-center relative z-10">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-16 items-center z-10">
           {/* Left Side: Content */}
-          <motion.div 
-            initial={{ opacity: 0, x: -60 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="space-y-10 text-center lg:text-left"
-          >
+          <div className="space-y-10 text-center lg:text-left">
             <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, type: "spring" }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-sm font-bold uppercase tracking-[0.2em] backdrop-blur-md"
-              >
-                <Sparkles size={14} className="animate-pulse" />
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-accent/20 text-emerald-800 dark:text-emerald-400 text-sm font-bold uppercase tracking-[0.2em]">
+                <Sparkles size={14} />
                 {t('app.intelligent_wealth')}
-              </motion.div>
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter text-white leading-[0.9] lg:leading-[0.85]">
+              </div>
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter text-primary leading-[0.9] lg:leading-[0.85]">
                 Clarity in <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-br from-emerald-400 via-emerald-500 to-blue-600">
+                <span className="text-accent dark:text-accent">
                   {t('app.clarity_every_expense')}
                 </span>
               </h1>
-              <p className="text-zinc-400 text-base sm:text-lg lg:text-xl max-w-lg mx-auto lg:mx-0 leading-relaxed font-light px-4 sm:px-0">
+              <p className="text-secondary text-base sm:text-lg lg:text-xl max-w-lg mx-auto lg:mx-0 leading-relaxed font-light px-4 sm:px-0">
                 {t('app.experience_future')}
               </p>
             </div>
             
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
-            >
+            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
               <button 
                 onClick={handleLogin}
-                className="group relative px-8 py-4 bg-emerald-500 text-zinc-950 rounded-xl font-black text-lg transition-all hover:scale-105 active:scale-95 flex items-center gap-3 overflow-hidden shadow-[0_0_30px_rgba(16,185,129,0.2)] hover:shadow-[0_0_50px_rgba(16,185,129,0.4)]"
+                className="px-8 py-4 bg-accent text-primary rounded-xl font-black text-lg transition-transform hover:scale-105 active:scale-95 flex items-center gap-3 shadow-lg shadow-emerald-500/30"
               >
-                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
                 <LogIn size={20} />
                 {t('app.start_journey')}
               </button>
@@ -503,18 +410,18 @@ export default function App() {
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[1,2,3,4].map(i => (
-                    <div key={i} className="w-10 h-10 rounded-full border-2 border-zinc-950 bg-zinc-800 flex items-center justify-center overflow-hidden ring-1 ring-white/5">
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-950 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden">
                       <img src={`https://picsum.photos/seed/finance${i}/40/40`} alt="user" referrerPolicy="no-referrer" />
                     </div>
                   ))}
                 </div>
                 <div className="text-left">
-                  <p className="text-white font-bold">{t('app.join_users', { count: '2,400' })}</p>
+                  <p className="text-primary font-bold">{t('app.join_users', { count: '2,400' })}</p>
                   <p className="text-zinc-500 text-xs">{t('app.managing_monthly', { amount: '$4M' })}</p>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* Auth Modal */}
           <AnimatePresence>
@@ -525,99 +432,65 @@ export default function App() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setShowAuthModal(false)}
-                  className="absolute inset-0 bg-zinc-950/90 backdrop-blur-xl"
+                  className="absolute inset-0 bg-zinc-950/70 backdrop-blur-sm"
                 />
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                  className="relative w-full max-w-lg bg-zinc-900 border border-white/10 rounded-[40px] shadow-2xl overflow-hidden"
+                  className="relative w-full max-w-lg bg-card border border-border rounded-[40px] shadow-2xl overflow-hidden"
                 >
-                  <AuthModal onClose={() => setShowAuthModal(false)} />
+                  <AuthModal 
+                    onClose={() => setShowAuthModal(false)} 
+                    onTermsClick={() => { setShowAuthModal(false); setPreLoginView('terms'); }}
+                    onPrivacyClick={() => { setShowAuthModal(false); setPreLoginView('policies'); }}
+                  />
                 </motion.div>
               </div>
             )}
           </AnimatePresence>
 
-          {/* Right Side: 3D Visuals */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9, rotateY: 20 }}
-            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="relative perspective-1000 hidden lg:block"
-          >
-            {/* Floating 3D Cards */}
-            <motion.div
-              animate={{ 
-                y: [0, -30, 0],
-                rotateZ: [0, 1, 0],
-                rotateX: [5, 10, 5]
-              }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              className="relative z-20 bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-10 rounded-[48px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] transform-gpu"
-              style={{ transformStyle: 'preserve-3d' }}
-            >
+          {/* Right Side: Clean Minimalistic Visuals */}
+          <div className="relative hidden lg:block">
+            <div className="bg-card border border-border p-10 rounded-[48px] shadow-xl">
               <div className="space-y-8">
                 <div className="flex justify-between items-center">
-                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-emerald-500/40">
-                    <Wallet className="text-zinc-950" size={28} />
+                  <div className="w-14 h-14 bg-emerald-100 dark:bg-accent/20 rounded-2xl flex items-center justify-center">
+                    <Wallet className="text-accent dark:text-emerald-400" size={28} />
                   </div>
                   <div className="text-right">
-                    <p className="text-zinc-500 text-sm font-black uppercase tracking-[0.2em]">Live Assets</p>
-                    <p className="text-4xl font-black text-white tracking-tight">$42,890.50</p>
+                    <p className="text-zinc-500 text-sm font-bold uppercase tracking-[0.2em]">Live Assets</p>
+                    <p className="text-4xl font-black text-primary tracking-tight">$42,890.50</p>
                   </div>
                 </div>
                 
                 <div className="space-y-4">
-                  <div className="flex justify-between text-sm font-black text-zinc-400 uppercase tracking-widest">
+                  <div className="flex justify-between text-sm font-bold text-zinc-500 uppercase tracking-widest">
                     <span>Portfolio Health</span>
-                    <span className="text-emerald-400">Excellent</span>
+                    <span className="text-accent dark:text-emerald-400">Excellent</span>
                   </div>
-                  <div className="h-3 w-full bg-zinc-800/50 rounded-full overflow-hidden p-0.5 border border-white/5">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: '82%' }}
-                      transition={{ duration: 2.5, delay: 1, ease: "circOut" }}
-                      className="h-full bg-gradient-to-r from-emerald-400 via-emerald-500 to-blue-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                  <div className="h-3 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-accent rounded-full w-[82%]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="bg-white/5 p-5 rounded-3xl border border-white/5 backdrop-blur-md">
-                    <TrendingUp className="text-emerald-400 mb-3" size={24} />
-                    <p className="text-xs text-zinc-500 font-black uppercase tracking-widest">Yield</p>
-                    <p className="text-2xl font-black text-white">+18.4%</p>
+                  <div className="bg-zinc-50 dark:bg-zinc-800/50 p-5 rounded-3xl border border-border">
+                    <TrendingUp className="text-accent mb-3" size={24} />
+                    <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Yield</p>
+                    <p className="text-2xl font-black text-primary">+18.4%</p>
                   </div>
-                  <div className="bg-white/5 p-5 rounded-3xl border border-white/5 backdrop-blur-md">
-                    <TrendingDown className="text-blue-400 mb-3" size={24} />
-                    <p className="text-xs text-zinc-500 font-black uppercase tracking-widest">Burn</p>
-                    <p className="text-2xl font-black text-white">-4.2%</p>
+                  <div className="bg-zinc-50 dark:bg-zinc-800/50 p-5 rounded-3xl border border-border">
+                    <TrendingDown className="text-blue-500 mb-3" size={24} />
+                    <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Burn</p>
+                    <p className="text-2xl font-black text-primary">-4.2%</p>
                   </div>
                 </div>
               </div>
-            </motion.div>
-
-            {/* Decorative Floating Orbs */}
-            <motion.div 
-              animate={{ 
-                y: [0, 50, 0],
-                x: [0, 20, 0],
-                scale: [1, 1.1, 1]
-              }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-[80px]"
-            />
-            <motion.div 
-              animate={{ 
-                y: [0, -60, 0],
-                x: [0, -30, 0],
-                scale: [1, 1.2, 1]
-              }}
-              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px]"
-            />
-          </motion.div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -655,7 +528,7 @@ export default function App() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Navigation Tabs */}
         <div className="overflow-x-auto pb-4 sm:pb-0 no-scrollbar">
-          <div className="flex bg-white dark:bg-white/5 backdrop-blur-md p-1.5 rounded-[24px] mb-8 w-max sm:w-fit mx-auto sm:mx-0 border border-zinc-200 dark:border-white/10 transition-colors">
+          <div className="flex bg-white dark:bg-white/5 backdrop-blur-md p-1.5 rounded-[24px] mb-8 w-max sm:w-fit mx-auto sm:mx-0 border border-border transition-colors">
             <TabButton 
               active={activeTab === 'dashboard'} 
               onClick={() => setActiveTab('dashboard')}
@@ -693,7 +566,7 @@ export default function App() {
               label={t('nav.quests')}
             />
             {profile?.streak && (
-              <div className="flex items-center gap-2 px-4 py-3 text-orange-500 font-black text-sm uppercase tracking-widest border-l border-zinc-200 dark:border-white/10 ml-2">
+              <div className="flex items-center gap-2 px-4 py-3 text-orange-500 font-black text-sm uppercase tracking-widest border-l border-border ml-2">
                 <Flame size={18} className="animate-pulse" />
                 {profile.streak.count}
               </div>
@@ -723,20 +596,20 @@ export default function App() {
               <div className="space-y-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="space-y-1">
-                    <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">{t('nav.transactions')}</h3>
+                    <h3 className="text-3xl font-black text-primary tracking-tight">{t('nav.transactions')}</h3>
                     <p className="text-zinc-500 text-[13px] font-bold uppercase tracking-widest">{t('transactions.history')}</p>
                   </div>
                   <div className="flex gap-3 w-full sm:w-auto">
                     <button 
                       onClick={() => setShowScanner(true)}
-                      className="flex-1 sm:flex-none px-6 py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl hover:scale-105 transition-all"
+                      className="flex-1 sm:flex-none px-6 py-4 bg-card text-primary rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl hover:scale-105 transition-all"
                     >
                       <Camera size={18} className="text-[#747482]" />
                       {t('app.scan_receipt')}
                     </button>
                     <button 
                       onClick={() => setShowAddForm(true)}
-                      className="flex-1 sm:flex-none px-6 py-4 bg-emerald-500 text-zinc-950 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all"
+                      className="flex-1 sm:flex-none px-6 py-4 bg-accent text-zinc-950 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all"
                     >
                       <Plus size={18} />
                       {t('app.add_entry')}
@@ -818,7 +691,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative z-10 w-full max-w-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-hidden"
+            className="relative z-10 w-full max-w-2xl bg-card border border-border rounded-[40px] shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="absolute top-6 right-6 z-20">
@@ -847,7 +720,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative z-10 w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
+            className="relative z-10 w-full max-w-md bg-card border border-border rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
             onClick={(e) => e.stopPropagation()}
           >
             <BudgetForm 
@@ -873,7 +746,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
+            className="relative w-full max-w-lg bg-card border border-border rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
           >
             <TransactionForm 
               onClose={() => window.history.back()}
@@ -901,7 +774,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative z-10 w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
+            className="relative z-10 w-full max-w-md bg-card border border-border rounded-[40px] shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
             onClick={(e) => e.stopPropagation()}
           >
             <GoalForm 
@@ -944,7 +817,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-2xl overflow-hidden"
+            className="relative w-full max-w-lg bg-card border border-border rounded-[40px] shadow-2xl overflow-hidden"
           >
             <StreakPrompt 
               streakCount={profile.streak.count}
@@ -968,7 +841,7 @@ function TabButton({ active, onClick, icon, label }: { active: boolean, onClick:
       onClick={onClick}
       className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
         active 
-          ? 'bg-emerald-500 text-zinc-950 shadow-lg shadow-emerald-500/20' 
+          ? 'bg-accent text-zinc-950 shadow-lg shadow-emerald-500/20' 
           : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5'
       }`}
     >

@@ -8,6 +8,7 @@ import { User, Globe, CreditCard, Save, CheckCircle2, Phone, Moon, Sun, Monitor,
 import { motion, AnimatePresence } from 'motion/react';
 import FinancialRecap from './FinancialRecap';
 import { User as FirebaseUser } from 'firebase/auth';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ProfileSettingsProps {
   user: FirebaseUser;
@@ -35,8 +36,14 @@ const GeneralSettingsForm = memo(({
   const [selectedCountry, setSelectedCountry] = useState(profile.country || '');
   const [selectedLanguage, setSelectedLanguage] = useState(profile.language || 'en');
   const [phoneNumber, setPhoneNumber] = useState(profile.phoneNumber || '');
-  const [theme, setTheme] = useState<Theme>(profile.theme || 'dark');
+  const { theme: currentTheme, setTheme: setGlobalTheme } = useTheme();
+  const [theme, setTheme] = useState<Theme>(currentTheme);
   const [fontSize, setFontSize] = useState<FontSize>(profile.fontSize || 'medium');
+
+  // Sync local theme state with global theme when changed via UI
+  useEffect(() => {
+    setGlobalTheme(theme);
+  }, [theme, setGlobalTheme]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,18 +72,18 @@ const GeneralSettingsForm = memo(({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white dark:bg-white/5 backdrop-blur-xl p-8 sm:p-12 rounded-[40px] border border-zinc-200 dark:border-white/10 shadow-2xl space-y-10 transition-colors duration-300"
+      className="bg-white dark:bg-white/5 backdrop-blur-xl p-8 sm:p-12 rounded-[40px] border border-border shadow-2xl space-y-10 transition-colors duration-300"
     >
       <div className="space-y-2">
-        <h3 className="text-[29px] font-black text-zinc-900 dark:text-white tracking-tight">{t('settings.profile')}</h3>
-        <p className="text-[#ceceda] text-[12px] font-bold uppercase tracking-widest">{t('settings.manage_preferences')}</p>
+        <h3 className="text-[29px] font-black text-primary tracking-tight">{t('settings.profile')}</h3>
+        <p className="text-zinc-500 dark:text-secondary text-[12px] font-bold uppercase tracking-widest">{t('settings.manage_preferences')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Display Name */}
         <div className="space-y-3">
-          <label className="text-[12px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
-            <User size={12} className="text-emerald-500" />
+          <label className="text-[12px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
+            <User size={12} className="text-accent" />
             {t('settings.full_name')}
           </label>
           <input 
@@ -84,13 +91,13 @@ const GeneralSettingsForm = memo(({
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             placeholder={t('settings.full_name')}
-            className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-4 px-6 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold"
+            className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-2xl py-4 px-6 text-primary placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold"
           />
         </div>
 
         {/* Phone Number */}
         <div className="space-y-3">
-          <label className="text-[12px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
+          <label className="text-[12px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
             <Phone size={12} className="text-amber-500" />
             {t('settings.phone_optional')}
           </label>
@@ -99,13 +106,13 @@ const GeneralSettingsForm = memo(({
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="+1 (555) 000-0000"
-            className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-4 px-6 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold"
+            className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-2xl py-4 px-6 text-primary placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold"
           />
         </div>
 
         {/* Theme Selection */}
         <div className="space-y-3">
-          <label className="text-[12px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
+          <label className="text-[12px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
             <Moon size={12} className="text-violet-500" />
             {t('settings.appearance')}
           </label>
@@ -134,8 +141,8 @@ const GeneralSettingsForm = memo(({
 
         {/* Font Size Selection */}
         <div className="space-y-3">
-          <label className="text-[12px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
-            <Sparkles size={12} className="text-emerald-500" />
+          <label className="text-[12px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
+            <Sparkles size={12} className="text-accent" />
             {t('settings.font_size')}
           </label>
           <div className="grid grid-cols-3 gap-3">
@@ -150,7 +157,7 @@ const GeneralSettingsForm = memo(({
                 onClick={() => setFontSize(f.id as FontSize)}
                 className={`px-4 py-4 rounded-2xl text-center border transition-all flex flex-col items-center gap-2 ${
                   fontSize === f.id 
-                    ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' 
+                    ? 'bg-accent/20 border-accent text-emerald-400' 
                     : 'bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/5 text-zinc-500 hover:border-zinc-300 dark:hover:border-white/20'
                 }`}
               >
@@ -163,17 +170,17 @@ const GeneralSettingsForm = memo(({
 
         {/* Language Selection */}
         <div className="space-y-3">
-          <label className="text-[12px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
+          <label className="text-[12px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
             <Languages size={12} className="text-blue-500" />
             {t('settings.language')}
           </label>
           <select 
             value={selectedLanguage}
             onChange={(e) => setSelectedLanguage(e.target.value)}
-            className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-4 px-6 text-zinc-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold appearance-none cursor-pointer"
+            className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-2xl py-4 px-6 text-primary focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold appearance-none cursor-pointer"
           >
             {LANGUAGES.map((lang) => (
-              <option key={lang.code} value={lang.code} className="bg-white dark:bg-zinc-900">
+              <option key={lang.code} value={lang.code} className="bg-card">
                 {lang.name}
               </option>
             ))}
@@ -182,17 +189,17 @@ const GeneralSettingsForm = memo(({
 
         {/* Currency & Region Selection */}
         <div className="space-y-3">
-          <label className="text-[12px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
+          <label className="text-[12px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
             <Coins size={12} className="text-amber-500" />
             {t('settings.currency')}
           </label>
           <select 
             value={selectedCountry}
             onChange={(e) => setSelectedCountry(e.target.value)}
-            className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-4 px-6 text-zinc-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold appearance-none cursor-pointer"
+            className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-2xl py-4 px-6 text-primary focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold appearance-none cursor-pointer"
           >
             {COUNTRIES.map((country) => (
-              <option key={country.code} value={country.name} className="bg-white dark:bg-zinc-900">
+              <option key={country.code} value={country.name} className="bg-card">
                 {country.name} ({country.currency.code} - {country.currency.symbol})
               </option>
             ))}
@@ -204,14 +211,14 @@ const GeneralSettingsForm = memo(({
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-6 bg-zinc-50 dark:bg-white/5 rounded-3xl border border-zinc-200 dark:border-white/10 flex items-center gap-4"
+            className="p-6 bg-zinc-50 dark:bg-white/5 rounded-3xl border border-border flex items-center gap-4"
           >
-            <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20">
+            <div className="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center border border-accent/20">
               <CreditCard className="text-emerald-400" size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-black text-[#ceceda] uppercase tracking-widest">{t('settings.active_currency')}</p>
-              <p className="text-zinc-900 dark:text-white font-black text-lg">
+              <p className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest">{t('settings.active_currency')}</p>
+              <p className="text-primary font-black text-lg">
                 {currentCountry.currency.name} ({currentCountry.currency.symbol})
               </p>
             </div>
@@ -222,7 +229,7 @@ const GeneralSettingsForm = memo(({
           <button 
             type="submit"
             disabled={isSaving}
-            className="flex-1 group relative px-8 py-5 bg-emerald-500 text-zinc-950 rounded-2xl font-black text-xl transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3 overflow-hidden shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 group relative px-8 py-5 bg-accent text-zinc-950 rounded-2xl font-black text-xl transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3 overflow-hidden shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save size={20} />
             {isSaving ? t('settings.saving_changes') : t('settings.save_settings')}
@@ -256,36 +263,36 @@ const SecuritySettings = memo(({ user }: { user: FirebaseUser }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white dark:bg-white/5 backdrop-blur-xl p-8 sm:p-12 rounded-[40px] border border-zinc-200 dark:border-white/10 shadow-2xl space-y-10 transition-colors duration-300"
+      className="bg-white dark:bg-white/5 backdrop-blur-xl p-8 sm:p-12 rounded-[40px] border border-border shadow-2xl space-y-10 transition-colors duration-300"
     >
       <div className="space-y-2">
-        <h3 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">{t('settings.security_title')}</h3>
-        <p className="text-[#ceceda] text-[11px] font-bold uppercase tracking-widest">{t('settings.security_desc')}</p>
+        <h3 className="text-4xl font-black text-primary tracking-tight">{t('settings.security_title')}</h3>
+        <p className="text-zinc-500 dark:text-secondary text-[11px] font-bold uppercase tracking-widest">{t('settings.security_desc')}</p>
       </div>
 
       <div className="space-y-6">
-        <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-3xl border border-zinc-200 dark:border-white/10 flex items-center gap-4">
+        <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-3xl border border-border flex items-center gap-4">
           <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20">
             <Mail className="text-blue-400" size={24} />
           </div>
           <div>
-            <p className="text-[11px] font-black text-[#ceceda] uppercase tracking-widest">{t('settings.email_address')}</p>
-            <p className="text-zinc-900 dark:text-white font-black text-lg">{user.email}</p>
+            <p className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest">{t('settings.email_address')}</p>
+            <p className="text-primary font-black text-lg">{user.email}</p>
           </div>
           {user.emailVerified && (
-            <div className="ml-auto px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-[8px] font-black uppercase tracking-widest border border-emerald-500/20">
+            <div className="ml-auto px-3 py-1 bg-accent/10 text-emerald-400 rounded-full text-[8px] font-black uppercase tracking-widest border border-accent/20">
               {t('settings.verified')}
             </div>
           )}
         </div>
 
-        <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-3xl border border-zinc-200 dark:border-white/10 flex items-center gap-4">
+        <div className="p-6 bg-zinc-50 dark:bg-white/5 rounded-3xl border border-border flex items-center gap-4">
           <div className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center border border-purple-500/20">
             <ShieldCheck className="text-purple-400" size={24} />
           </div>
           <div>
-            <p className="text-[11px] font-black text-[#ceceda] uppercase tracking-widest">{t('settings.auth_method')}</p>
-            <p className="text-zinc-900 dark:text-white font-black text-lg">
+            <p className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest">{t('settings.auth_method')}</p>
+            <p className="text-primary font-black text-lg">
               {user.providerData[0]?.providerId === 'google.com' ? 'Google Account' : 'Email & Password'}
             </p>
           </div>
@@ -296,8 +303,8 @@ const SecuritySettings = memo(({ user }: { user: FirebaseUser }) => {
             <ShieldAlert className="text-rose-400" size={24} />
           </div>
           <div className="flex-1">
-            <p className="text-[11px] font-black text-[#ceceda] uppercase tracking-widest">{t('settings.security_status')}</p>
-            <p className="text-zinc-900 dark:text-white font-black text-lg">{t('settings.account_protected')}</p>
+            <p className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-widest">{t('settings.security_status')}</p>
+            <p className="text-primary font-black text-lg">{t('settings.account_protected')}</p>
           </div>
         </div>
       </div>

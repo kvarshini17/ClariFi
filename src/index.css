@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300..700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/getvoip-grotesque');
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
@@ -8,25 +9,51 @@
   --font-grotesque: "GetVoIP Grotesque", "Space Grotesk", sans-serif;
   --font-arial: "Arial", sans-serif;
   --breakpoint-xs: 480px;
+
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
 }
 
 @layer base {
+  :root {
+    --background: #F8FAFC;
+    --card: #FFFFFF;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --border: #E5E7EB;
+    --accent: #00A86B;
+    --income: #10B981;
+    --expense: #EF4444;
+  }
+
+  .dark {
+    --background: #0B0F14;
+    --card: #151A21;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A0A8B8;
+    --border: rgba(255, 255, 255, 0.08);
+    --accent: #00D084;
+    --income: #10B981;
+    --expense: #EF4444;
+  }
+
   html {
     font-size: 16px;
   }
   
   body {
-    @apply bg-zinc-950 text-zinc-300 antialiased transition-colors duration-300;
+    @apply bg-background text-primary antialiased transition-colors duration-300;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
-  }
-
-  /* Light Mode Overrides */
-  .light body {
-    @apply bg-zinc-50 text-zinc-900;
   }
 }
 
@@ -47,10 +74,10 @@
       @apply bg-transparent;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      @apply bg-white/10 rounded-full;
+      @apply bg-zinc-300 rounded-full;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      @apply bg-white/20;
+      @apply bg-zinc-400;
     }
   }
 
@@ -102,6 +129,6 @@
   }
 
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-card border border-border shadow-xl;
   }
 }

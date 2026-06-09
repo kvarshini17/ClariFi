@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+﻿import { GoogleGenAI } from "@google/genai";
 
 export async function generateLogo() {
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });

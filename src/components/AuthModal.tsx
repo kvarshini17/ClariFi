@@ -14,9 +14,11 @@ import { COUNTRIES } from '../constants';
 
 interface AuthModalProps {
   onClose: () => void;
+  onTermsClick?: () => void;
+  onPrivacyClick?: () => void;
 }
 
-export default function AuthModal({ onClose }: AuthModalProps) {
+export default function AuthModal({ onClose, onTermsClick, onPrivacyClick }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [step, setStep] = useState(1); // 1: Credentials, 2: Currency (for signup)
@@ -50,7 +52,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
 
     try {
       await sendPasswordResetEmail(auth, email);
-      setSuccess("Reset link sent! 📧 We've dispatched a secure link from clarifi.support@gmail.com. Please check your Inbox (and Spam/Promotions) to reset your password.");
+      setSuccess("Reset link sent! ?? We've dispatched a secure link from clarifi.support@gmail.com. Please check your Inbox (and Spam/Promotions) to reset your password.");
       setResendTimer(60); // 1 minute cooldown
     } catch (err: any) {
       console.error("Reset Error:", err);
@@ -149,7 +151,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
     <div className="p-6 sm:p-8">
       <div className="flex justify-between items-center mb-8">
         <div className="space-y-1">
-          <h3 className="text-2xl font-black text-white tracking-tight">
+          <h3 className="text-2xl font-black text-primary tracking-tight">
             {isForgotPassword ? 'Reset Password' : (isLogin ? 'Welcome Back' : (step === 1 ? 'Create Account' : 'Final Step'))}
           </h3>
           <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">
@@ -158,7 +160,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
         </div>
         <button 
           onClick={onClose}
-          className="p-2 hover:bg-white/5 rounded-xl transition-all border border-transparent hover:border-white/10 text-zinc-500 hover:text-white"
+          className="p-2 hover:bg-zinc-50 dark:bg-white/5 rounded-xl transition-all border border-transparent hover:border-border text-zinc-500 hover:text-primary"
         >
           <X size={18} />
         </button>
@@ -167,7 +169,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
       <div className="space-y-6">
         {isForgotPassword ? (
           <form onSubmit={handleForgotPassword} className="space-y-6">
-            <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-4">
+            <div className="bg-accent/5 border border-accent/10 rounded-2xl p-4">
               <p className="text-[11px] text-emerald-400 font-bold leading-relaxed">
                 <Sparkles size={12} className="inline mr-1" />
                 Wait! Firebase will send you a **Secure Link**, not a code. Check your **Spam folder** if you don't see it within 60 seconds.
@@ -184,7 +186,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-white placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
+                className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-xl py-4 px-5 text-primary placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
               />
             </div>
 
@@ -217,7 +219,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
               <button 
                 type="submit"
                 disabled={loading || resendTimer > 0}
-                className="w-full py-5 bg-emerald-500 text-zinc-950 rounded-xl font-black text-lg hover:scale-[1.01] active:scale-95 transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-50 disabled:hover:scale-100"
+                className="w-full py-5 bg-accent text-zinc-950 rounded-xl font-black text-lg hover:scale-[1.01] active:scale-95 transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-50 disabled:hover:scale-100"
               >
                 {loading ? 'Sending...' : (resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Send Reset Link')}
               </button>
@@ -230,7 +232,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                   setSuccess('');
                   setResendTimer(0);
                 }}
-                className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-1"
+                className="w-full py-4 bg-zinc-50 dark:bg-white/5 border border-border text-primary rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-1"
               >
                 <ChevronLeft size={18} /> Back to Login
               </button>
@@ -241,7 +243,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
             {/* Google Login Button - Only show on step 1 */}
             <button 
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-2 bg-white/5 border border-white/10 py-4 rounded-xl text-white font-bold hover:bg-white/10 transition-all active:scale-[0.98]"
+              className="w-full flex items-center justify-center gap-2 bg-zinc-50 dark:bg-white/5 border border-border py-4 rounded-xl text-primary font-bold hover:bg-white/10 transition-all active:scale-[0.98]"
             >
               <Chrome size={20} className="text-emerald-400" />
               Continue with Google
@@ -249,10 +251,10 @@ export default function AuthModal({ onClose }: AuthModalProps) {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/5"></div>
+                <div className="w-full border-t border-zinc-200 dark:border-white/5"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-zinc-900 px-3 text-zinc-600 font-black tracking-widest">Or email</span>
+                <span className="bg-card px-3 text-zinc-600 font-black tracking-widest">Or email</span>
               </div>
             </div>
 
@@ -269,7 +271,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-white placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
+                      className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-xl py-4 px-5 text-primary placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
                     />
                   </div>
                 )}
@@ -284,7 +286,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 text-white placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
+                    className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-xl py-4 px-5 text-primary placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
                   />
                 </div>
 
@@ -301,7 +303,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                           setError('');
                           setSuccess('');
                         }}
-                        className="text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:text-emerald-400 transition-colors"
+                        className="text-[10px] font-black text-accent uppercase tracking-widest hover:text-emerald-400 transition-colors"
                       >
                         Forgot Password?
                       </button>
@@ -314,12 +316,12 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 pr-12 text-white placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
+                      className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-xl py-4 px-5 pr-12 text-primary placeholder:text-zinc-700 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-bold"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-primary transition-colors"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -344,7 +346,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full group relative px-8 py-5 bg-emerald-500 text-zinc-950 rounded-xl font-black text-lg transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 overflow-hidden shadow-lg shadow-emerald-500/10 disabled:opacity-50"
+                className="w-full group relative px-8 py-5 bg-accent text-zinc-950 rounded-xl font-black text-lg transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 overflow-hidden shadow-lg shadow-emerald-500/10 disabled:opacity-50"
               >
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Next Step')}
                 {isLogin ? <LogIn size={20} /> : <ChevronRight size={20} />}
@@ -365,15 +367,15 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                     onClick={() => setSelectedCountry(country)}
                     className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
                       selectedCountry.code === country.code 
-                        ? 'bg-emerald-500/10 border-emerald-500 text-white' 
-                        : 'bg-white/5 border-white/5 text-zinc-500 hover:border-white/10'
+                        ? 'bg-accent/10 border-accent text-primary' 
+                        : 'bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/5 text-zinc-500 hover:border-border'
                     }`}
                   >
                     <div className="text-left">
                       <p className="font-bold">{country.name}</p>
                       <p className="text-[11px] font-bold uppercase tracking-widest opacity-50">{country.currency.code} ({country.currency.symbol})</p>
                     </div>
-                    {selectedCountry.code === country.code && <div className="w-2 h-2 bg-emerald-500 rounded-full" />}
+                    {selectedCountry.code === country.code && <div className="w-2 h-2 bg-accent rounded-full" />}
                   </button>
                 ))}
               </div>
@@ -383,14 +385,14 @@ export default function AuthModal({ onClose }: AuthModalProps) {
               <button 
                 type="button"
                 onClick={() => setStep(1)}
-                className="flex-1 bg-white/5 border border-white/10 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-1"
+                className="flex-1 bg-zinc-50 dark:bg-white/5 border border-border text-primary py-4 rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-1"
               >
                 <ChevronLeft size={20} /> Back
               </button>
               <button 
                 type="submit"
                 disabled={loading}
-                className="flex-[2] bg-emerald-500 text-zinc-950 py-4 rounded-xl font-black text-lg hover:scale-[1.01] active:scale-95 transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-50"
+                className="flex-[2] bg-accent text-zinc-950 py-4 rounded-xl font-black text-lg hover:scale-[1.01] active:scale-95 transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-50"
               >
                 {loading ? 'Creating...' : 'Complete Signup'}
               </button>
@@ -405,16 +407,30 @@ export default function AuthModal({ onClose }: AuthModalProps) {
               setStep(1);
               setError('');
             }}
-            className="group inline-flex items-center gap-2 px-8 py-4 bg-emerald-500 text-zinc-950 hover:bg-emerald-400 rounded-full text-sm font-black uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20 hover:scale-105 active:scale-95 animate-pulse-subtle"
+            className="group inline-flex items-center gap-2 px-8 py-4 bg-accent text-zinc-950 hover:bg-emerald-400 rounded-full text-sm font-black uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20 hover:scale-105 active:scale-95 animate-pulse-subtle"
           >
             {isLogin ? "Don't have an account? Sign Up Now" : "Already have an account? Sign In"}
             <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </button>
 
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-[11px] text-zinc-600 font-bold uppercase tracking-widest leading-relaxed">
-              By continuing, you agree to ClariFi's<br />
-              <span className="text-emerald-500/80">Terms of Service</span> and <span className="text-emerald-500/80">Privacy Policy</span>
+          <div className="pt-4 border-t border-border">
+            <p className="text-[10px] sm:text-[11px] md:text-xs text-zinc-600 font-bold uppercase tracking-widest leading-relaxed">
+              By continuing, you agree to ClariFi's<br className="hidden sm:block" />
+              <button 
+                type="button"
+                onClick={onTermsClick}
+                className="text-accent/80 hover:text-accent underline-offset-4 hover:underline transition-all mx-1"
+              >
+                Terms of Service
+              </button> 
+              and 
+              <button 
+                type="button"
+                onClick={onPrivacyClick}
+                className="text-accent/80 hover:text-accent underline-offset-4 hover:underline transition-all mx-1"
+              >
+                Privacy Policy
+              </button>
             </p>
           </div>
         </div>

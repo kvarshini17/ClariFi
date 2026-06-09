@@ -75,8 +75,8 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
   const getIcon = (type: string) => {
     switch (type) {
       case 'warning': return <AlertCircle className="text-amber-500" size={20} />;
-      case 'success': return <CheckCircle2 className="text-emerald-500" size={20} />;
-      default: return <Info className="text-indigo-500" size={20} />;
+      case 'success': return <CheckCircle2 className="text-accent" size={20} />;
+      default: return <Info className="text-accent" size={20} />;
     }
   };
 
@@ -89,23 +89,23 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
         initial={{ opacity: 0, y: -20, scale: 0.95, x: 20 }}
         animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
         exit={{ opacity: 0, y: -20, scale: 0.95, x: 20 }}
-        className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[40px] shadow-[0_40px_80px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col max-h-[80vh]"
+        className="w-full max-w-md bg-card border border-border rounded-[40px] shadow-[0_40px_80px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col max-h-[80vh]"
       >
         {/* Header */}
-        <div className="p-8 border-b border-zinc-100 dark:border-white/5 flex items-center justify-between bg-zinc-50/50 dark:bg-white/2">
+        <div className="p-8 border-b border-border flex items-center justify-between bg-zinc-50/50 dark:bg-white/2">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="w-12 h-12 bg-white dark:bg-zinc-800 rounded-2xl shadow-sm flex items-center justify-center border border-zinc-100 dark:border-white/5">
-                <Bell className="text-zinc-900 dark:text-white" size={24} />
+              <div className="w-12 h-12 bg-white dark:bg-zinc-800 rounded-2xl shadow-sm flex items-center justify-center border border-border">
+                <Bell className="text-primary" size={24} />
               </div>
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-600 text-white text-[11px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-zinc-900">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-white text-[11px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-zinc-900">
                   {unreadCount}
                 </span>
               )}
             </div>
             <div>
-              <h3 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight">Activity</h3>
+              <h3 className="text-xl font-black text-primary tracking-tight">Activity</h3>
               <p className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mt-0.5">
                 {unreadCount} New Alerts
               </p>
@@ -121,10 +121,10 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
 
         {/* Actions Bar */}
         {notifications.length > 0 && (
-          <div className="px-8 py-3 bg-zinc-50/30 dark:bg-white/1 border-b border-zinc-100 dark:border-white/5 flex justify-between items-center">
+          <div className="px-8 py-3 bg-zinc-50/30 dark:bg-white/1 border-b border-border flex justify-between items-center">
             <button 
               onClick={markAllAsRead}
-              className="flex items-center gap-2 text-[11px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:opacity-70 transition-opacity disabled:opacity-30"
+              className="flex items-center gap-2 text-[11px] font-black text-accent dark:text-emerald-400 uppercase tracking-widest hover:opacity-70 transition-opacity disabled:opacity-30"
               disabled={unreadCount === 0}
             >
               <CheckCheck size={14} />
@@ -153,8 +153,8 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
                   <Bell className="text-zinc-200 dark:text-white/10" size={40} />
                 </div>
                 <div>
-                  <p className="text-zinc-900 dark:text-white font-black tracking-tight">All Caught Up!</p>
-                  <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">No new notifications at the moment.</p>
+                  <p className="text-primary font-black tracking-tight">All Caught Up!</p>
+                  <p className="text-secondary text-xs mt-1">No new notifications at the moment.</p>
                 </div>
               </motion.div>
             ) : (
@@ -166,29 +166,29 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
-                    className={`p-8 flex gap-5 transition-all relative group ${notif.read ? 'opacity-60 grayscale-[0.5]' : 'bg-indigo-500/[0.02]'}`}
+                    className={`p-8 flex gap-5 transition-all relative group ${notif.read ? 'opacity-60 grayscale-[0.5]' : 'bg-accent/[0.02]'}`}
                     onClick={() => !notif.read && markAsRead(notif.id)}
                   >
                     {!notif.read && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600" />
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent" />
                     )}
                     
                     <div className="mt-1 shrink-0">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${notif.read ? 'bg-zinc-100 dark:bg-white/5' : 'bg-white dark:bg-zinc-800 shadow-sm border border-zinc-100 dark:border-white/5'}`}>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${notif.read ? 'bg-zinc-100 dark:bg-white/5' : 'bg-white dark:bg-zinc-800 shadow-sm border border-border'}`}>
                         {getIcon(notif.type)}
                       </div>
                     </div>
 
                     <div className="flex-1 min-w-0 space-y-2">
                       <div className="flex items-start justify-between gap-2">
-                        <h4 className={`font-black tracking-tight text-sm truncate ${notif.read ? 'text-zinc-500' : 'text-zinc-900 dark:text-white'}`}>
+                        <h4 className={`font-black tracking-tight text-sm truncate ${notif.read ? 'text-zinc-500' : 'text-primary'}`}>
                           {notif.title}
                         </h4>
                         <span className="text-[11px] text-zinc-400 font-black whitespace-nowrap pt-0.5">
                           {format(notif.createdAt, 'HH:mm')}
                         </span>
                       </div>
-                      <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed font-medium">
+                      <p className="text-secondary text-xs leading-relaxed font-medium">
                         {notif.message}
                       </p>
                       
@@ -196,7 +196,7 @@ export default function NotificationCenter({ uid, notifications, onClose }: Noti
                         {!notif.read && (
                           <button 
                             onClick={(e) => { e.stopPropagation(); markAsRead(notif.id); }}
-                            className="text-[11px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:underline"
+                            className="text-[11px] font-black text-accent dark:text-emerald-400 uppercase tracking-widest hover:underline"
                           >
                             Mark Read
                           </button>

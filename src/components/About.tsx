@@ -2,7 +2,6 @@ import React from 'react';
 import { Info, Sparkles, Shield, Zap, Target, Heart, ChevronLeft, Brain, Star, Globe, ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
-import LogoShowcase from './LogoShowcase';
 
 interface AboutProps {
   onBack: () => void;
@@ -29,7 +28,7 @@ export default function About({ onBack }: AboutProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full border border-emerald-500/20 mb-4"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent dark:text-emerald-400 rounded-full border border-accent/20 mb-4"
         >
           <Star size={14} className="fill-current" />
           <span className="text-[10px] font-black uppercase tracking-widest">{t('about.version')}</span>
@@ -40,17 +39,17 @@ export default function About({ onBack }: AboutProps) {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-4"
         >
-          <h1 className="text-6xl sm:text-8xl font-black text-zinc-900 dark:text-white tracking-tighter leading-none">
+          <h1 className="text-6xl sm:text-8xl font-black text-primary tracking-tighter leading-none">
             {t('about.title')}
           </h1>
-          <p className="text-xl sm:text-2xl font-medium text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl sm:text-2xl font-medium text-secondary max-w-2xl mx-auto leading-relaxed">
             {t('about.description')}
           </p>
         </motion.div>
 
         {/* Decorative Background Elements */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full -z-10 blur-[120px] opacity-20 pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-64 h-64 bg-emerald-500 rounded-full" />
+          <div className="absolute top-0 left-1/4 w-64 h-64 bg-accent rounded-full" />
           <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-500 rounded-full" />
         </div>
       </div>
@@ -62,15 +61,15 @@ export default function About({ onBack }: AboutProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="md:col-span-2 p-10 bg-white dark:bg-zinc-900 rounded-[48px] border border-zinc-100 dark:border-white/5 shadow-xl relative overflow-hidden group"
+          className="md:col-span-2 p-10 bg-card rounded-[48px] border border-border shadow-xl relative overflow-hidden group"
         >
           <div className="relative z-10 space-y-6">
             <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500">
               <Brain size={32} />
             </div>
             <div className="space-y-2">
-              <h3 className="text-[25px] font-black text-zinc-900 dark:text-white tracking-tight">{t('about.features.ai_title')}</h3>
-              <p className="text-[16px] text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed max-w-md">
+              <h3 className="text-[25px] font-black text-primary tracking-tight">{t('about.features.ai_title')}</h3>
+              <p className="text-[16px] text-secondary font-medium leading-relaxed max-w-md">
                 {t('about.features.ai_desc')}
               </p>
             </div>
@@ -84,9 +83,9 @@ export default function About({ onBack }: AboutProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="p-10 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[48px] shadow-2xl flex flex-col justify-between group"
+          className="p-10 bg-card text-primary rounded-[48px] shadow-2xl flex flex-col justify-between group"
         >
-          <div className="w-12 h-12 bg-white/10 dark:bg-zinc-900/10 rounded-xl flex items-center justify-center">
+          <div className="w-12 h-12 bg-zinc-900/5 dark:bg-white/10 rounded-xl flex items-center justify-center">
             <Zap size={24} className="text-amber-400 fill-amber-400" />
           </div>
           <div className="space-y-2">
@@ -102,7 +101,7 @@ export default function About({ onBack }: AboutProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="p-10 bg-emerald-500 text-white rounded-[48px] shadow-2xl flex flex-col justify-between group"
+          className="p-10 bg-accent text-white rounded-[48px] shadow-2xl flex flex-col justify-between group"
         >
           <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
             <ShieldCheck size={24} />
@@ -120,28 +119,19 @@ export default function About({ onBack }: AboutProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="md:col-span-2 p-10 bg-zinc-100 dark:bg-white/5 rounded-[48px] border border-zinc-200 dark:border-white/10 flex flex-col justify-center space-y-6"
+          className="md:col-span-2 p-10 bg-zinc-100 dark:bg-white/5 rounded-[48px] border border-border flex flex-col justify-center space-y-6"
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
               <Globe size={24} />
             </div>
-            <h3 className="text-[25px] font-black text-zinc-900 dark:text-white tracking-tight">{t('about.mission_title')}</h3>
+            <h3 className="text-[25px] font-black text-primary tracking-tight">{t('about.mission_title')}</h3>
           </div>
-          <p className="text-[15px] text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
+          <p className="text-[15px] text-secondary font-medium leading-relaxed">
             {t('about.mission_desc')}
           </p>
         </motion.div>
       </div>
-
-      {/* Logo Showcase Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.45 }}
-      >
-        <LogoShowcase />
-      </motion.div>
 
       {/* Values & Passion Split Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -157,9 +147,9 @@ export default function About({ onBack }: AboutProps) {
           </div>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[t('about.values.v1'), t('about.values.v2'), t('about.values.v3'), t('about.values.v4')].map((value, i) => (
-              <li key={i} className="flex items-start gap-3 p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-white/5 shadow-sm">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400 leading-tight">{value}</span>
+              <li key={i} className="flex items-start gap-3 p-4 bg-card rounded-2xl border border-border shadow-sm">
+                <div className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 shrink-0" />
+                <span className="text-sm font-bold text-secondary leading-tight">{value}</span>
               </li>
             ))}
           </ul>
@@ -169,7 +159,7 @@ export default function About({ onBack }: AboutProps) {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.6 }}
-          className="p-10 bg-gradient-to-br from-zinc-900 to-zinc-950 dark:from-white dark:to-zinc-100 rounded-[48px] text-white dark:text-zinc-900 space-y-6 shadow-2xl"
+          className="p-10 bg-gradient-to-br from-white to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 rounded-[48px] text-primary space-y-6 shadow-2xl"
         >
           <div className="flex items-center gap-3">
             <Heart size={24} className="text-rose-500 fill-rose-500" />
@@ -179,7 +169,7 @@ export default function About({ onBack }: AboutProps) {
             {t('about.passion_desc')}
           </p>
           <div className="pt-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 dark:bg-zinc-900/10 rounded-full w-[256px]">
+            <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900/5 dark:bg-white/10 rounded-full w-[256px]">
               <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{t('about.made_with')}</span>
               <Heart size={12} className="text-rose-500 fill-rose-500" />
               <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{t('about.by_team')}</span>

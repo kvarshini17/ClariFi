@@ -27,7 +27,7 @@ export default function StreakPrompt({ streakCount, onClose, onAddTransaction }:
             opacity: [0.1, 0.15, 0.1] 
           }}
           transition={{ duration: 5, repeat: Infinity }}
-          className="absolute -bottom-24 -right-24 w-64 h-64 bg-emerald-500/20 blur-[80px] rounded-full"
+          className="absolute -bottom-24 -right-24 w-64 h-64 bg-accent/20 blur-[80px] rounded-full"
         />
       </div>
 
@@ -78,7 +78,7 @@ export default function StreakPrompt({ streakCount, onClose, onAddTransaction }:
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.5, type: "spring" }}
-              className="absolute -top-3 -right-3 bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white w-12 h-12 rounded-full flex items-center justify-center font-black text-xl border-4 border-zinc-900 dark:border-white/10 shadow-2xl transition-colors"
+              className="absolute -top-3 -right-3 bg-white dark:bg-zinc-950 text-primary w-12 h-12 rounded-full flex items-center justify-center font-black text-xl border-4 border-zinc-900 dark:border-white/10 shadow-2xl transition-colors"
             >
               {streakCount}
             </motion.div>
@@ -91,7 +91,7 @@ export default function StreakPrompt({ streakCount, onClose, onAddTransaction }:
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <h3 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter leading-tight transition-colors">
+            <h3 className="text-4xl font-black text-primary tracking-tighter leading-tight transition-colors">
               You're on <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
                 Fire!
@@ -102,9 +102,9 @@ export default function StreakPrompt({ streakCount, onClose, onAddTransaction }:
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-zinc-500 dark:text-zinc-400 text-lg font-medium max-w-xs mx-auto transition-colors"
+            className="text-secondary text-lg font-medium max-w-xs mx-auto transition-colors"
           >
-            That's <span className="text-zinc-900 dark:text-white font-black">{streakCount} days</span> in a row. 
+            That's <span className="text-primary font-black">{streakCount} days</span> in a row. 
             Did you receive or spend any money today?
           </motion.p>
         </div>
@@ -114,7 +114,7 @@ export default function StreakPrompt({ streakCount, onClose, onAddTransaction }:
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onAddTransaction}
-            className="group relative px-8 py-5 bg-emerald-500 text-zinc-950 rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-3 overflow-hidden shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
+            className="group relative px-8 py-5 bg-accent text-zinc-950 rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-3 overflow-hidden shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
           >
             <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
             <CheckCircle2 size={24} />

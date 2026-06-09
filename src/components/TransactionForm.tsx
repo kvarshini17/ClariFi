@@ -122,8 +122,8 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
     <div className="p-6 sm:p-10 bg-white dark:bg-zinc-950 transition-colors">
       <div className="flex justify-between items-center mb-8">
         <div className="space-y-1">
-          <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">New Entry</h3>
-          <p className="text-[#ceceda] text-[11px] font-bold uppercase tracking-widest">Record your {type}</p>
+          <h3 className="text-3xl font-black text-primary tracking-tight">New Entry</h3>
+          <p className="text-zinc-500 dark:text-secondary text-[11px] font-bold uppercase tracking-widest">Record your {type}</p>
         </div>
         <button 
           onClick={onClose}
@@ -134,7 +134,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-medium break-all">
+        <div className="mb-6 p-4 bg-expense/10 border border-expense/20 rounded-2xl text-red-400 text-xs font-medium break-all">
           <p className="font-black uppercase tracking-widest mb-1">Error</p>
           {error}
         </div>
@@ -142,7 +142,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Type Toggle */}
-        <div className="flex bg-zinc-50 dark:bg-white/5 p-1.5 rounded-2xl border border-zinc-200 dark:border-white/10">
+        <div className="flex bg-zinc-50 dark:bg-white/5 p-1.5 rounded-2xl border border-border">
           <button
             type="button"
             onClick={() => {
@@ -151,7 +151,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
             }}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-base font-sans font-black uppercase tracking-widest transition-all ${
               type === 'expense' 
-                ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' 
+                ? 'bg-expense text-white shadow-lg shadow-red-500/20' 
                 : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
@@ -166,7 +166,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
             }}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-base font-sans font-black uppercase tracking-widest transition-all ${
               type === 'income' 
-                ? 'bg-emerald-500 text-zinc-950 shadow-lg shadow-emerald-500/20' 
+                ? 'bg-accent text-zinc-950 shadow-lg shadow-emerald-500/20' 
                 : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
@@ -176,11 +176,11 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
         </div>
 
         <div className="space-y-3">
-          <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
+          <label className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
             Amount ({currencySymbol})
           </label>
           <div className="relative">
-            <span className={`absolute left-6 top-1/2 -translate-y-1/2 text-xl font-black ${type === 'expense' ? 'text-red-500' : 'text-emerald-500'}`}>
+            <span className={`absolute left-6 top-1/2 -translate-y-1/2 text-xl font-black ${type === 'expense' ? 'text-expense' : 'text-accent'}`}>
               {currencySymbol}
             </span>
             <input 
@@ -191,7 +191,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
               onChange={(e) => setAmount(e.target.value)}
               onWheel={(e) => (e.target as HTMLInputElement).blur()}
               placeholder="0.00"
-              className={`w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-5 pl-12 pr-6 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 outline-none transition-all text-3xl font-black tracking-tighter ${
+              className={`w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-2xl py-5 pl-12 pr-6 text-primary placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 outline-none transition-all text-3xl font-black tracking-tighter ${
                 type === 'expense' ? 'focus:ring-red-500' : 'focus:ring-emerald-500'
               }`}
             />
@@ -200,7 +200,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
 
         {type === 'expense' && (
           <div className="space-y-3">
-            <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
+            <label className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
               Category
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
@@ -216,7 +216,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
                     cat === 'Entertainment' ? 'col-span-2 sm:col-span-2' : ''
                   } ${
                     category === cat && !isCustom
-                      ? 'bg-red-500/20 border-red-500 text-red-400' 
+                      ? 'bg-expense/20 border-expense text-red-400' 
                       : 'bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/5 text-zinc-500 hover:border-zinc-300 dark:hover:border-white/20'
                   }`}
                 >
@@ -235,7 +235,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
                   }}
                   className={`px-2 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${
                     category === cat && !isCustom
-                      ? 'bg-red-500/20 border-red-500 text-red-400' 
+                      ? 'bg-expense/20 border-expense text-red-400' 
                       : 'bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/5 text-zinc-500 hover:border-zinc-300 dark:hover:border-white/20'
                   }`}
                 >
@@ -251,11 +251,11 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
                 }}
                 className={`px-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all flex items-center justify-center gap-2 ${
                   isCustom
-                    ? 'bg-red-500/20 border-red-500 text-red-400' 
+                    ? 'bg-expense/20 border-expense text-red-400' 
                     : 'bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/5 text-zinc-500 hover:border-zinc-300 dark:hover:border-white/20'
                 }`}
               >
-                <Settings2 size={19} style={{ width: '23px', height: '19px' }} className="text-[#d6d6e7]" />
+                <Settings2 size={19} style={{ width: '23px', height: '19px' }} className="text-zinc-500 dark:text-secondary" />
                 <span>Others</span>
               </button>
             </div>
@@ -273,7 +273,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
                     value={customCategory}
                     onChange={(e) => setCustomCategory(e.target.value)}
                     placeholder="Enter custom category..."
-                    className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3 px-5 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 focus:ring-red-500 outline-none transition-all font-bold text-sm mt-2"
+                    className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-2xl py-3 px-5 text-primary placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 focus:ring-red-500 outline-none transition-all font-bold text-sm mt-2"
                   />
                 </motion.div>
               )}
@@ -283,7 +283,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-3">
-            <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
+            <label className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
               Date
             </label>
             <input 
@@ -291,12 +291,12 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3 px-5 text-zinc-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold text-sm"
+              className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-2xl py-3 px-5 text-primary focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold text-sm"
             />
           </div>
 
           <div className="space-y-3">
-            <label className="text-[11px] font-black text-[#ceceda] uppercase tracking-[0.2em] flex items-center gap-2">
+            <label className="text-[11px] font-black text-zinc-500 dark:text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
               Note
             </label>
             <input 
@@ -304,7 +304,7 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Optional..."
-              className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3 px-5 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold text-sm"
+              className="w-full bg-zinc-50 dark:bg-white/5 border border-border rounded-2xl py-3 px-5 text-primary placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold text-sm"
             />
           </div>
         </div>
@@ -314,8 +314,8 @@ export default function TransactionForm({ onClose, uid, currencySymbol, budgets 
           disabled={isSubmitting}
           className={`w-full group relative px-8 py-4 rounded-2xl font-black text-lg transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 overflow-hidden shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${
             type === 'expense' 
-              ? 'bg-red-500 text-white shadow-red-500/20' 
-              : 'bg-emerald-500 text-zinc-950 shadow-emerald-500/20'
+              ? 'bg-expense text-white shadow-red-500/20' 
+              : 'bg-accent text-zinc-950 shadow-emerald-500/20'
           }`}
         >
           {isSubmitting ? 'Processing...' : `Confirm ${type === 'expense' ? 'Expense' : 'Income'}`}

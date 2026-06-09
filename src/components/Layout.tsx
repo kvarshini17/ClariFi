@@ -53,7 +53,7 @@ export default function Layout({
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white font-sans relative overflow-x-hidden transition-colors duration-300">
+    <div className="min-h-screen bg-background text-primary font-sans relative overflow-x-hidden transition-colors duration-300">
       {/* Global Grid Background */}
       <div 
         className="fixed inset-0 opacity-[0.05] dark:opacity-[0.05] light:opacity-[0.1] pointer-events-none z-0" 
@@ -65,7 +65,7 @@ export default function Layout({
 
       {/* Background Blobs & 3D Objects - Simplified on Mobile */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-emerald-500/5 dark:bg-emerald-500/10 blur-[80px] sm:blur-[120px] rounded-full animate-pulse-slow" />
+        <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-accent/5 dark:bg-accent/10 blur-[80px] sm:blur-[120px] rounded-full animate-pulse-slow" />
         <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-blue-500/5 dark:bg-blue-500/10 blur-[80px] sm:blur-[120px] rounded-full animate-pulse-slow" style={{ animationDelay: '-4s' }} />
         
         {/* Floating 3D-like elements - Hidden on Mobile for Performance */}
@@ -98,8 +98,8 @@ export default function Layout({
               <Wallet className="text-zinc-950" size={18} />
             </div>
             <div className="flex flex-col">
-              <span className="font-grotesque font-black text-lg tracking-tighter text-zinc-900 dark:text-white">ClariFi</span>
-              <div className="flex items-center gap-1 text-xs font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-widest">
+              <span className="font-grotesque font-black text-lg tracking-tighter text-primary">ClariFi</span>
+              <div className="flex items-center gap-1 text-xs font-bold text-accent dark:text-emerald-400 uppercase tracking-widest">
                 <Sparkles size={10} /> Pro
               </div>
             </div>
@@ -113,7 +113,7 @@ export default function Layout({
             >
               <Bell size={18} className="sm:w-5 sm:h-5" />
               {unreadNotifications > 0 && (
-                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-zinc-950" />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-expense rounded-full border-2 border-white dark:border-zinc-950" />
               )}
             </button>
 
@@ -123,10 +123,10 @@ export default function Layout({
                 className="flex items-center gap-2 sm:gap-3 hover:bg-zinc-100 dark:hover:bg-white/5 p-1 sm:p-1.5 rounded-xl transition-all border border-transparent hover:border-zinc-200 dark:hover:border-white/10 group"
               >
                 <div className="hidden sm:flex flex-col items-end">
-                  <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-emerald-400 transition-colors truncate max-w-[100px] lg:max-w-[150px]">
+                  <span className="text-xs sm:text-sm font-bold text-primary group-hover:text-emerald-400 transition-colors truncate max-w-[100px] lg:max-w-[150px]">
                     {t('dashboard.welcome')} {profile?.displayName || user.displayName || user.email?.split('@')[0] || 'Friend'}
                   </span>
-                  <span className="text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400 font-bold uppercase tracking-wider truncate max-w-[100px] lg:max-w-[150px]">
+                  <span className="text-[11px] sm:text-xs text-secondary font-bold uppercase tracking-wider truncate max-w-[100px] lg:max-w-[150px]">
                     {user.email}
                   </span>
                 </div>
@@ -134,11 +134,11 @@ export default function Layout({
                   <img 
                     src={user.photoURL} 
                     alt={user.displayName || 'User'} 
-                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-zinc-200 dark:border-white/10 p-0.5 group-hover:border-emerald-500/50 transition-colors object-cover"
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-border p-0.5 group-hover:border-accent/50 transition-colors object-cover"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black border border-emerald-500/30 group-hover:bg-emerald-500/30 transition-colors text-xs sm:text-base">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-accent/20 text-emerald-400 flex items-center justify-center font-black border border-accent/30 group-hover:bg-accent/30 transition-colors text-xs sm:text-base">
                     {(user.displayName?.charAt(0) || user.email?.charAt(0) || 'U').toUpperCase()}
                   </div>
                 )}
@@ -151,16 +151,16 @@ export default function Layout({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-2 w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden py-2 z-50"
+                    className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden py-2 z-50"
                   >
-                    <div className="px-4 py-3 border-b border-zinc-100 dark:border-white/5 sm:hidden">
-                      <p className="text-sm font-black text-zinc-900 dark:text-white truncate">{t('dashboard.welcome')} {profile?.displayName || user.displayName || user.email?.split('@')[0] || 'Friend'}</p>
-                      <p className="text-xs font-bold text-zinc-600 dark:text-zinc-400 truncate">{user.email}</p>
+                    <div className="px-4 py-3 border-b border-border sm:hidden">
+                      <p className="text-sm font-black text-primary truncate">{t('dashboard.welcome')} {profile?.displayName || user.displayName || user.email?.split('@')[0] || 'Friend'}</p>
+                      <p className="text-xs font-bold text-secondary truncate">{user.email}</p>
                     </div>
 
                     <button
                       onClick={() => { onSettingsClick?.(); setShowUserMenu(false); }}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-secondary hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <Settings size={18} />
                       <span className="text-[11px] font-black uppercase tracking-widest">{t('nav.settings')}</span>
@@ -168,7 +168,7 @@ export default function Layout({
 
                     <button
                       onClick={() => { onConverterClick?.(); setShowUserMenu(false); }}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-secondary hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <RefreshCw size={18} />
                       <span className="text-[11px] font-black uppercase tracking-widest">{t('settings.converter.title')}</span>
@@ -176,7 +176,7 @@ export default function Layout({
 
                     <button
                       onClick={() => { onRecapClick?.(); setShowUserMenu(false); }}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-secondary hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <BarChart3 size={18} />
                       <span className="text-[11px] font-black uppercase tracking-widest">{t('recap.title')}</span>
@@ -184,7 +184,7 @@ export default function Layout({
 
                     <button
                       onClick={() => { onAboutClick?.(); setShowUserMenu(false); }}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-secondary hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <Info size={18} />
                       <span className="text-[11px] font-black uppercase tracking-widest">{t('nav.about_app')}</span>
@@ -192,7 +192,7 @@ export default function Layout({
 
                     <button
                       onClick={() => { onSecurityClick?.(); setShowUserMenu(false); }}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-secondary hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <Lock size={18} />
                       <span className="text-[11px] font-black uppercase tracking-widest text-left">{t('settings.security')}</span>
@@ -200,7 +200,7 @@ export default function Layout({
 
                     <button
                       onClick={() => { onTermsClick?.(); setShowUserMenu(false); }}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-secondary hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <FileText size={18} />
                       <span className="text-[11px] font-black uppercase tracking-widest text-left">{t('nav.terms')}</span>
@@ -208,7 +208,7 @@ export default function Layout({
 
                     <button
                       onClick={() => { onPoliciesClick?.(); setShowUserMenu(false); }}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-secondary hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <ShieldCheck size={18} />
                       <span className="text-[11px] font-black uppercase tracking-widest text-left">{t('nav.policies')}</span>
@@ -216,7 +216,7 @@ export default function Layout({
 
                     <button
                       onClick={() => { onSupportClick?.(); setShowUserMenu(false); }}
-                      className="w-full px-4 py-3 flex items-center gap-3 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="w-full px-4 py-3 flex items-center gap-3 text-secondary hover:bg-zinc-50 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       <MessageCircle size={18} />
                       <span className="text-[11px] font-black uppercase tracking-widest text-left">{t('nav.support')}</span>
@@ -245,11 +245,11 @@ export default function Layout({
       
       <footer className="py-20 text-center relative z-10">
         <div className="max-w-6xl mx-auto px-4 border-t border-zinc-200 dark:border-white/5 pt-10 space-y-4">
-          <p className="text-zinc-700 dark:text-zinc-400 text-xs font-black uppercase tracking-[0.2em]">Â© 2026 ClariFi â€¢ Intelligent Finance</p>
+          <p className="text-zinc-700 dark:text-zinc-400 text-xs font-black uppercase tracking-[0.2em]">© 2026 ClariFi • Intelligent Finance</p>
           <div className="flex items-center justify-center gap-6">
             <button 
               onClick={() => onAboutClick?.()} 
-              className="text-zinc-600 dark:text-zinc-400 hover:text-emerald-500 text-xs font-black uppercase tracking-widest transition-colors"
+              className="text-secondary hover:text-accent text-xs font-black uppercase tracking-widest transition-colors"
             >
               {t('nav.about')}
             </button>

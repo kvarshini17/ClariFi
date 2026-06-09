@@ -125,12 +125,12 @@ export default function SmartInsights({ transactions, budgets = [], currencySymb
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-2">
-        <div className="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 shadow-lg shadow-emerald-500/10">
+        <div className="bg-accent/10 p-3 rounded-2xl border border-accent/20 shadow-lg shadow-emerald-500/10">
           <Sparkles className="text-emerald-400" size={24} />
         </div>
         <div className="space-y-1">
-          <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">AI Insights</h3>
-          <p className="text-zinc-600 dark:text-zinc-400 text-xs font-bold uppercase tracking-widest">Intelligent Pattern Recognition</p>
+          <h3 className="text-2xl font-black text-primary tracking-tight">AI Insights</h3>
+          <p className="text-secondary text-xs font-bold uppercase tracking-widest">Intelligent Pattern Recognition</p>
         </div>
       </div>
 
@@ -138,29 +138,29 @@ export default function SmartInsights({ transactions, budgets = [], currencySymb
         {insights.map((insight, idx) => (
           <div 
             key={idx}
-            className="bg-white dark:bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-zinc-200 dark:border-white/10 shadow-2xl flex gap-4 items-start relative overflow-hidden group transition-colors"
+            className="bg-white dark:bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-border shadow-2xl flex gap-4 items-start relative overflow-hidden group transition-colors"
           >
             <div className="absolute top-0 right-0 w-20 h-20 bg-zinc-50 dark:bg-white/5 blur-[30px] rounded-full -mr-10 -mt-10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="mt-0.5 bg-zinc-50 dark:bg-white/5 p-3 rounded-xl border border-zinc-200 dark:border-white/5 relative z-10">{insight.icon}</div>
             <div className="space-y-2 relative z-10">
-              <h4 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">{insight.title}</h4>
-              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">{insight.message}</p>
+              <h4 className="text-lg font-black text-primary tracking-tight">{insight.title}</h4>
+              <p className="text-secondary leading-relaxed font-medium">{insight.message}</p>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-900 dark:to-black rounded-[40px] p-10 text-zinc-900 dark:text-white relative overflow-hidden border border-zinc-200 dark:border-white/10 shadow-2xl transition-colors">
+      <div className="bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-900 dark:to-black rounded-[40px] p-10 text-primary relative overflow-hidden border border-border shadow-2xl transition-colors">
         <div className="relative z-10 space-y-6 max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-emerald-400 text-xs font-black uppercase tracking-widest">
             Daily Wisdom
           </div>
           <h3 className="text-2xl font-black tracking-tight leading-tight">The 50/30/20 Rule</h3>
-          <p className="text-zinc-600 dark:text-zinc-400 text-base leading-relaxed font-medium">
+          <p className="text-secondary text-base leading-relaxed font-medium">
             "Allocate 50% for needs, 30% for wants, and 20% for savings or debt repayment. This simple ratio is the foundation of long-term wealth."
           </p>
         </div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -mr-20 -mt-20 blur-[80px]" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full -mr-20 -mt-20 blur-[80px]" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full -ml-15 -mb-15 blur-[60px]" />
       </div>
     </div>

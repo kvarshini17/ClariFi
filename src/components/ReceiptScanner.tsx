@@ -85,16 +85,16 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="relative w-full max-w-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-[48px] shadow-2xl overflow-hidden transition-colors"
+        className="relative w-full max-w-xl bg-card border border-border rounded-[48px] shadow-2xl overflow-hidden transition-colors"
       >
         <div className="p-8 sm:p-12 space-y-8">
           <div className="flex justify-between items-center">
             <div className="space-y-1">
-              <h3 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-3">
+              <h3 className="text-3xl font-black text-primary tracking-tight flex items-center gap-3">
                 <Sparkles className="text-emerald-400" size={28} />
                 Receipt Scanner
               </h3>
-              <p className="text-[#ceceda] text-sm font-bold uppercase tracking-widest">AI-Powered Data Extraction</p>
+              <p className="text-zinc-500 dark:text-secondary text-sm font-bold uppercase tracking-widest">AI-Powered Data Extraction</p>
             </div>
             <button 
               onClick={onClose}
@@ -108,13 +108,13 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className="aspect-square sm:aspect-video border-2 border-dashed border-zinc-200 dark:border-white/10 rounded-[32px] flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/5 transition-all group"
+                className="aspect-square sm:aspect-video border-2 border-dashed border-border rounded-[32px] flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/5 transition-all group"
               >
-                <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center border border-accent/20 group-hover:scale-110 transition-transform">
                   <Upload className="text-emerald-400" size={32} />
                 </div>
                 <div className="text-center">
-                  <p className="text-zinc-900 dark:text-white font-black">Upload Receipt</p>
+                  <p className="text-primary font-black">Upload Receipt</p>
                   <p className="text-zinc-500 text-xs">JPG, PNG</p>
                 </div>
               </div>
@@ -126,13 +126,13 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
                     fileInputRef.current.click();
                   }
                 }}
-                className="aspect-square sm:aspect-video border-2 border-dashed border-zinc-200 dark:border-white/10 rounded-[32px] flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/5 transition-all group"
+                className="aspect-square sm:aspect-video border-2 border-dashed border-border rounded-[32px] flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/5 transition-all group"
               >
                 <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform">
                   <Camera className="text-blue-400" size={32} />
                 </div>
                 <div className="text-center">
-                  <p className="text-zinc-900 dark:text-white font-black">Take Photo</p>
+                  <p className="text-primary font-black">Take Photo</p>
                   <p className="text-zinc-500 text-xs">Direct Camera Access</p>
                 </div>
               </div>
@@ -151,7 +151,7 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="relative aspect-video rounded-[32px] overflow-hidden border border-zinc-200 dark:border-white/10 shadow-2xl">
+              <div className="relative aspect-video rounded-[32px] overflow-hidden border border-border shadow-2xl">
                 <img src={image} alt="Receipt" className="w-full h-full object-cover" />
                 <button 
                   onClick={() => setImage(null)}
@@ -162,7 +162,7 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
               </div>
 
               {error && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm font-medium flex items-center gap-2">
+                <div className="p-4 bg-expense/10 border border-expense/20 rounded-2xl text-red-400 text-sm font-medium flex items-center gap-2">
                   <X size={16} />
                   {error}
                 </div>
@@ -171,7 +171,7 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
               <button
                 onClick={scanReceipt}
                 disabled={isScanning}
-                className="w-full group relative px-8 py-5 bg-emerald-500 text-zinc-950 rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-3 overflow-hidden shadow-xl shadow-emerald-500/20 disabled:opacity-50"
+                className="w-full group relative px-8 py-5 bg-accent text-zinc-950 rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-3 overflow-hidden shadow-xl shadow-emerald-500/20 disabled:opacity-50"
               >
                 {isScanning ? (
                   <>
@@ -189,7 +189,7 @@ export default function ReceiptScanner({ onScanComplete, onClose }: ReceiptScann
           )}
 
           <div className="flex items-center justify-center gap-2 text-zinc-500 text-[11px] font-black uppercase tracking-[0.3em]">
-            <CheckCircle2 size={12} className="text-emerald-500" />
+            <CheckCircle2 size={12} className="text-accent" />
             Secure & Private Processing
           </div>
         </div>
